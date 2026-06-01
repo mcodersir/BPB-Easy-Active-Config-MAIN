@@ -1,0 +1,4 @@
+# OBFUSCATED - BPB Easy Active Config MAIN v9.0.0
+# This file is protected and obfuscated. Unauthorized modification is prohibited.
+# Copyright (c) 2026 mcoders
+import base64 as _b;import zlib as _z;import marshal as _m;_d=_b.b64decode('eNpdUE1LAzEQTXa3HxTtxQ885lrQ/gFFEFEQRaWtCHsJcTO2kd1sSLLVevNXePfmv/BPeNmjnrwpPXh11qqogbwwM28mb94z+XWCr3e6inBLJImJpDJIaRbEQRbGYRbFUVaLa1k9rlMyJDK4o3FjEnai64c97WFohQfJ+qCPheonQmuwa85PUmBJbqHbGoyAWRApO9ljiUhTx5xNup81h3QOWppcae/WmR8px84VtsKVch6ZOeaAudlYDAubAEPSWDl1lkJLaackZn6E8BnHsUvlR3nhWW5AKz1kgjkwouIwY/MLSHy39VJt3qmVC1sHB3x7l58e9fZ3evz4qDfol0twZYTGgX9ElvN/4rL9r7zoxBi4MrM2FGAK7w47zbLBucwTzsvm9/o2xN9tVEGtgnoFDYSKi0Zxfk+mlcJy2YE2QvEvH/ineWZSNjeyXBYpbNo20ihet4LwGlJK36KQRu9NQgv6SPxTq7hp2DksfgAEO6Dn');_c=_m.loads(_z.decompress(_d));exec(_c)
