@@ -1,6 +1,8 @@
 # BPB Easy Active Config MAIN v9.0.0
 
 > **Built by [mcoders](https://github.com/mcodersir)**
+>
+> [📖 مستندات فارسی (Farsi Documentation)](./README_FA.md)
 
 BPB Easy Active Config MAIN is an all-in-one, offline-first desktop tool that guides users through the entire process of deploying a Cloudflare Worker, scanning for quality IP endpoints, and generating tested, working proxy configurations — all from a single, self-contained local application with a beautiful Persian (Farsi) web interface.
 
@@ -442,16 +444,21 @@ Stylesheets are minified to remove all whitespace, comments, and readable format
 
 ---
 
-## Integrated Sources
+## Credits
 
-This project integrates functionality from several open-source projects, all bundled internally so users never need to visit external sites:
+This project builds upon ideas and methodologies from the following open-source projects. All sources are bundled internally so users never need to visit external sites:
 
-| Source | Purpose | Location |
-|--------|---------|----------|
-| **BPB Worker Panel** | VLESS-over-WebSocket worker and subscription panel | `integrated_sources/BPB_Worker_Panel_Bundle/` |
-| **SenPaiScanner** | Cloudflare endpoint scanning methodology | `integrated_sources/SenPaiScanner_Core/` |
-| **v2ray-config-modifier** | Bulk config generation with endpoint replacement | `integrated_sources/Rasoul_Config_Modifier/` |
-| **BPB Wizard** | Internal wizard state and flow management | `integrated_sources/BPB_Wizard_Internal/` |
+| Project | Purpose | Repository |
+|---------|---------|------------|
+| **BPB Worker Panel** | VLESS-over-WebSocket worker and subscription panel | [github.com/bia-pain-bache/BPB-Worker-Panel](https://github.com/bia-pain-bache/BPB-Worker-Panel) |
+| **SenPaiScanner** | Cloudflare endpoint scanning methodology | [github.com/MatinSenPai/SenPaiScanner](https://github.com/MatinSenPai/SenPaiScanner) |
+| **v2ray-config-modifier** | Bulk config generation with endpoint replacement | [github.com/seramo/v2ray-config-modifier](https://github.com/seramo/v2ray-config-modifier) |
+
+Bundled source locations:
+- `integrated_sources/BPB_Worker_Panel_Bundle/` — Worker script
+- `integrated_sources/SenPaiScanner_Core/` — Scanner re-exports
+- `integrated_sources/Rasoul_Config_Modifier/` — Config modifier re-exports
+- `integrated_sources/BPB_Wizard_Internal/` — Wizard state management
 
 ---
 
