@@ -829,26 +829,107 @@ class ScanResult:
         return asdict(self)
 
 
-def fetch_url_text(url: str, timeout: int = 18) -> str:
+def fetch_url_text(url: str, timeout: int = 18, retries: int = 2) -> tuple:
+    """Fetch URL text with retry logic. Returns (text, error_message).
+
+    If successful: (text, None)
+    If failed: (error_text, error_detail)
+    """
     url = (url or "").strip()
     if not (url.startswith("http://") or url.startswith("https://")):
-        raise ValueError("لینک Subscription باید با http:// یا https:// شروع شود.")
-    req = Request(url, headers={"User-Agent": APP_USER_AGENT, "Accept": "text/plain,*/*"})
-    try:
-        with urlopen(req, timeout=timeout) as response:
-            data = response.read()
-        return data.decode("utf-8", errors="ignore")
-    except HTTPError as e:
-        # Handle HTTP errors gracefully
+        return "", "لینک Subscription باید با http:// یا https:// شروع شود."
+
+    last_error = ""
+    for attempt in range(max(1, retries)):
+        req = Request(url, headers={"User-Agent": APP_USER_AGENT, "Accept": "text/plain,*/*"})
         try:
-            body = e.read().decode("utf-8", errors="ignore")
-        except Exception:
-            body = ""
-        return f"[HTTP Error {e.code}: {e.reason}] {body[:200]}"
-    except URLError as e:
-        return f"[URL Error: {str(e)[:200]}]"
-    except Exception as e:
-        return f"[Fetch Error: {str(e)[:200]}]"
+            with urlopen(req, timeout=timeout) as response:
+                data = response.read()
+            return data.decode("utf-8", errors="ignore"), None
+        except HTTPError as e:
+            try:
+                body = e.read().decode("utf-8", errors="ignore")[:300]
+            except Exception:
+                body = ""
+            if e.code == 500:
+                last_error = f"سرور Worker خطای 500 داده. احتمالاً Worker درست Deploy نشده یا UUID تنظیم نشده."
+                if attempt < retries - 1:
+                    time.sleep(1.5)
+                    continue
+            elif e.code == 401:
+                return "", f"خطای 401: دسترسی غیرمجاز. Worker نیاز به تنظیمات دارد."
+            elif e.code == 404:
+                return "", f"خطای 404: مسیر Subscription اشتباه است. مسیر صحیح معمولاً /sub است."
+            else:
+                last_error = f"خطای HTTP {e.code}: {e.reason}"
+                if attempt < retries - 1:
+                    time.sleep(1)
+                    continue
+            return f"[HTTP Error {e.code}: {e.reason}] {body}", last_error
+        except URLError as e:
+            return "", f"اتصال برقرار نشد: {str(e)[:150]}"
+        except socket.timeout:
+            last_error = "زمان اتصال به سرور تمام شد. اینترنت خود را چک کن."
+            if attempt < retries - 1:
+                time.sleep(1)
+                continue
+            return "", last_error
+        except Exception as e:
+            return "", f"خطای دریافت: {str(e)[:150]}"
+    return "", last_error
+
+
+def build_bpb_template_configs(worker_url: str, uuid: str, sub_path: str = "sub", proxy_ip: str = "") -> List[str]:
+    """Build default BPB VLESS/Trojan configs from worker URL and UUID.
+
+    This is a fallback when the subscription endpoint returns errors.
+    It creates standard BPB Worker Panel config patterns.
+    """
+    configs = []
+    uuid = (uuid or "").strip()
+    if not uuid:
+        return configs
+
+    # Parse worker URL to get the hostname
+    worker_url = (worker_url or "").strip()
+    if not worker_url:
+        return configs
+
+    # Extract hostname from URL - remove /sub or other paths
+    parsed = urlparse(worker_url)
+    hostname = (parsed.hostname or "").strip()
+    if not hostname:
+        # Maybe it's just a hostname like bpb-panel.account.workers.dev
+        hostname = worker_url.split("/")[0].split(":")[0].strip()
+    if not hostname:
+        return configs
+
+    # Standard BPB Worker Panel VLESS WS config patterns
+    # Pattern 1: VLESS WS TLS (primary - most common BPB config)
+    vless_ws_tls = f"vless://{uuid}@{hostname}:443?encryption=none&security=tls&sni={hostname}&type=ws&host={hostname}&path=%2F{uuid}-vless#BPB-VLESS-WS-TLS-{hostname.split('.')[0]}"
+    configs.append(vless_ws_tls)
+
+    # Pattern 2: VLESS WS TLS on port 8443
+    vless_ws_8443 = f"vless://{uuid}@{hostname}:8443?encryption=none&security=tls&sni={hostname}&type=ws&host={hostname}&path=%2F{uuid}-vless#BPB-VLESS-WS-8443-{hostname.split('.')[0]}"
+    configs.append(vless_ws_8443)
+
+    # Pattern 3: VLESS GRPC TLS
+    vless_grpc = f"vless://{uuid}@{hostname}:443?encryption=none&security=tls&sni={hostname}&type=grpc&serviceName={uuid}-grpc&host={hostname}#BPB-VLESS-GRPC-TLS-{hostname.split('.')[0]}"
+    configs.append(vless_grpc)
+
+    # Pattern 4: Trojan WS TLS (if proxy_ip is provided, use it; otherwise worker domain)
+    trojan_host = proxy_ip if proxy_ip.strip() else hostname
+    trojan_ws = f"trojan@{trojan_host}:443?security=tls&sni={hostname}&type=ws&host={hostname}&path=%2Ftrojan%2F{uuid}#BPB-Trojan-WS-TLS-{hostname.split('.')[0]}"
+    # Fix: proper trojan URL format
+    trojan_ws = f"trojan://{uuid}@{trojan_host}:443?security=tls&sni={hostname}&type=ws&host={hostname}&path=%2Ftrojan%2F{uuid}#BPB-Trojan-WS-TLS-{hostname.split('.')[0]}"
+    configs.append(trojan_ws)
+
+    # Pattern 5: VLESS WS on alternative TLS ports
+    for alt_port in [2053, 2083, 2087, 2096]:
+        vless_alt = f"vless://{uuid}@{hostname}:{alt_port}?encryption=none&security=tls&sni={hostname}&type=ws&host={hostname}&path=%2F{uuid}-vless#BPB-VLESS-WS-{alt_port}-{hostname.split('.')[0]}"
+        configs.append(vless_alt)
+
+    return configs
 
 
 def maybe_decode_subscription(text: str) -> str:
@@ -876,8 +957,21 @@ def split_subscription_lines(text: str) -> List[str]:
         # Skip error messages from fetch_url_text
         if s.startswith("[HTTP Error") or s.startswith("[URL Error") or s.startswith("[Fetch Error"):
             continue
+        # Skip HTML content (from error pages)
+        if s.startswith("<!") or s.startswith("<html") or s.startswith("<!--") or s.startswith("</"):
+            continue
+        # Skip lines that are clearly HTML tags
+        if s.startswith("<") and (">" in s) and not s.startswith("<vless") and not s.startswith("<trojan"):
+            continue
         out.append(s)
     return out
+
+
+def is_fetch_error(text: str) -> bool:
+    """Check if the text is a fetch error message."""
+    if not text:
+        return False
+    return text.startswith("[HTTP Error") or text.startswith("[URL Error") or text.startswith("[Fetch Error")
 
 
 def _qdict(query: str) -> Dict[str, List[str]]:

@@ -23,10 +23,12 @@ sys.path.insert(0, str(SRC_DIR))
 
 from core import (  # noqa: E402
     ALL_CF_WORKER_PORTS,
+    build_bpb_template_configs,
     choose_best,
     expand_scan_endpoints,
     fetch_url_text,
     generate_modified_configs,
+    is_fetch_error,
     normalize_ip_list,
     parse_configs,
     random_cloudflare_ips,
@@ -63,8 +65,12 @@ def save_deploy_config(data: dict):
             "uuid": (data.get("uuid") or "").strip(),
             "sub_path": (data.get("sub_path") or "sub").strip().strip("/") or "sub",
             "proxy_ip": (data.get("proxy_ip") or "").strip(),
+            "subscription_url": (data.get("subscription_url") or "").strip(),
         }
-        CONFIG_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        # Merge with existing to preserve fields not in this update
+        existing = load_deploy_config()
+        existing.update(payload)
+        CONFIG_FILE.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception:
         pass
 
@@ -236,6 +242,16 @@ class AppHandler(BaseHTTPRequestHandler):
         if not BUNDLED_WORKER.exists():
             raise ValueError("فایل داخلی BPB worker.js داخل integrated_sources/BPB_Worker_Panel_Bundle پیدا نشد.")
         result = deploy_worker_script(token, account_id, worker_name, BUNDLED_WORKER, uuid=uuid, sub_path=sub_path, proxy_ip=proxy_ip)
+        # Build worker_url_hint for saving subscription URL
+        subdomain_hint = ""
+        if result.get("success"):
+            sub_info = get_workers_subdomain(token, account_id)
+            try:
+                sub_name = (sub_info.get("result") or {}).get("subdomain")
+                if sub_name:
+                    subdomain_hint = f"https://{worker_name}.{sub_name}.workers.dev/{sub_path}"
+            except Exception:
+                pass
         # Save all deploy info after successful deploy
         if result.get("success"):
             save_deploy_config({
@@ -245,6 +261,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 "uuid": uuid,
                 "sub_path": sub_path,
                 "proxy_ip": proxy_ip,
+                "subscription_url": subdomain_hint,
             })
         subdomain_enable = None
         account_subdomain = None
@@ -274,7 +291,17 @@ class AppHandler(BaseHTTPRequestHandler):
     def api_fetch(self):
         data = self._read_json()
         sub_url = (data.get("subscription_url") or "").strip()
-        raw_text = fetch_url_text(sub_url, timeout=int(data.get("timeout") or 18))
+        raw_text, fetch_error = fetch_url_text(sub_url, timeout=int(data.get("timeout") or 18))
+        if fetch_error and not raw_text:
+            # Subscription fetch completely failed
+            self._send_json({
+                "ok": False,
+                "error": fetch_error,
+                "total_lines": 0,
+                "supported_configs": 0,
+                "examples": [],
+            })
+            return
         lines = split_subscription_lines(raw_text)
         parsed = parse_configs(lines)
         (OUT_DIR / "base_configs.txt").write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
@@ -284,6 +311,7 @@ class AppHandler(BaseHTTPRequestHandler):
             "supported_configs": len(parsed),
             "examples": [c.display_name for c in parsed[:8]],
             "saved": str(OUT_DIR / "base_configs.txt"),
+            "fetch_warning": fetch_error if fetch_error else None,
         })
 
     def api_scan_ips(self):
@@ -324,15 +352,11 @@ class AppHandler(BaseHTTPRequestHandler):
         workers = int(data.get("workers") or 32)
         limit = int(data.get("limit") or 1600)
         random_count = int(data.get("random_count") or 0)
-        raw_text = fetch_url_text(sub_url, timeout=max(12, timeout + 8))
-        lines = split_subscription_lines(raw_text)
-        parsed = parse_configs(lines)
-        base_configs = [c.raw for c in parsed]
-        if not base_configs:
-            raise ValueError("هیچ کانفیگ VLESS/Trojan/VMess قابل تستی داخل Subscription پیدا نشد.")
 
         selected_ports = [int(p) for p in data.get("ports", []) if str(p).isdigit()]
         logs = []
+        warnings = []
+
         def progress(done, total, res):
             if done <= 12 or done == total or done % 20 == 0:
                 state = "OK" if res.ok else "FAIL"
@@ -361,6 +385,71 @@ class AppHandler(BaseHTTPRequestHandler):
                 endpoints.extend(random_cloudflare_ips(random_count))
             return expand_ports(list(dict.fromkeys(endpoints)))
 
+        # --- Step 1: Try to fetch subscription ---
+        base_configs = []
+        fetch_warning = None
+        raw_text, fetch_error = fetch_url_text(sub_url, timeout=max(12, timeout + 8))
+
+        if fetch_error:
+            # Subscription fetch failed - log the error
+            fetch_warning = fetch_error
+            logs.append(f"[WARNING] Subscription fetch error: {fetch_error}")
+
+            # Try to build template configs from worker URL + saved UUID
+            saved_config = load_deploy_config()
+            uuid = saved_config.get("uuid", "")
+            proxy_ip = saved_config.get("proxy_ip", "")
+            sub_path = saved_config.get("sub_path", "sub")
+
+            if uuid:
+                base_configs = build_bpb_template_configs(sub_url, uuid, sub_path, proxy_ip)
+                if base_configs:
+                    logs.append(f"[INFO] ساخت {len(base_configs)} کانفیگ الگو از UUID و آدرس Worker")
+                    warnings.append("Subscription در دسترس نبود. از الگوی BPB با UUID ذخیره‌شده استفاده شد.")
+                else:
+                    warnings.append("Subscription در دسترس نبود و کانفیگ الگو هم ساخته نشد. UUID را چک کن.")
+            else:
+                warnings.append(
+                    "Subscription در دسترس نبود و UUID ذخیره‌شده هم نیست. "
+                    "اول Worker را Deploy کن و بعد دوباره تست کن."
+                )
+        else:
+            # Subscription fetch succeeded - parse configs
+            lines = split_subscription_lines(raw_text)
+            parsed = parse_configs(lines)
+            base_configs = [c.raw for c in parsed]
+
+            # Save base configs for future use
+            if base_configs:
+                (OUT_DIR / "base_configs.txt").write_text(
+                    "\n".join(lines) + ("\n" if lines else ""), encoding="utf-8"
+                )
+
+            if not base_configs:
+                # Subscription returned content but no parsable configs
+                # Try template configs as fallback
+                saved_config = load_deploy_config()
+                uuid = saved_config.get("uuid", "")
+                proxy_ip = saved_config.get("proxy_ip", "")
+                sub_path = saved_config.get("sub_path", "sub")
+
+                if uuid:
+                    base_configs = build_bpb_template_configs(sub_url, uuid, sub_path, proxy_ip)
+                    if base_configs:
+                        logs.append(f"[INFO] Subscription خالی بود. {len(base_configs)} کانفیگ الگو ساخته شد.")
+                        warnings.append("Subscription خالی بود. از الگوی BPB استفاده شد.")
+                    else:
+                        raise ValueError(
+                            "Subscription خالی بود و کانفیگ الگو هم ساخته نشد. "
+                            "Worker را دوباره Deploy کن و مطمئن شو UUID تنظیم شده."
+                        )
+                else:
+                    raise ValueError(
+                        "هیچ کانفیگ VLESS/Trojan/VMess در Subscription پیدا نشد و UUID ذخیره‌شده هم نیست. "
+                        "اول Worker را Deploy کن تا UUID ذخیره شود، بعد دوباره تست کن."
+                    )
+
+        # --- Step 2: Run tests ---
         phase = "base"
         target_configs = base_configs[:limit]
         results = []
@@ -382,6 +471,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     "top_results": [r.to_dict() for r in results[:20]],
                     "files": files,
                     "logs": logs,
+                    "warnings": warnings,
                 })
                 return
 
@@ -389,7 +479,28 @@ class AppHandler(BaseHTTPRequestHandler):
         phase = "clean_ip" if mode == "clean_ip" else "auto_clean_ip_fallback"
         endpoints = collect_clean_endpoints()
         if not endpoints:
-            raise ValueError("برای حالت Clean IP باید IP وارد کنی، اسکنر IP را اجرا کنی، یا تولید تصادفی IP را فعال کنی.")
+            # If base configs work partially, just return those results
+            if results and any(r.ok for r in results):
+                best = choose_best(results)
+                files = save_outputs(ROOT_DIR, base_configs, target_configs, results, best)
+                self._send_json({
+                    "ok": True,
+                    "phase": "base_partial",
+                    "base_count": len(base_configs),
+                    "target_count": len(target_configs),
+                    "result_count": len(results),
+                    "working_count": len([r for r in results if r.ok]),
+                    "best": best.to_dict() if best else None,
+                    "top_results": [r.to_dict() for r in results[:20]],
+                    "files": files,
+                    "logs": logs,
+                    "warnings": warnings + ["Clean IP در دسترس نبود؛ نتایج پایه نمایش داده شد."],
+                })
+                return
+            raise ValueError(
+                "برای حالت Clean IP باید IP وارد کنی، اسکنر IP را اجرا کنی، یا تولید تصادفی IP را فعال کنی. "
+                "همچنین می‌توانی حالت هوشمند را انتخاب کنی."
+            )
         target_configs = generate_modified_configs(base_configs, endpoints, limit=limit)
         if not target_configs:
             raise ValueError("از IPهای داده‌شده هیچ کانفیگ قابل تولیدی ساخته نشد.")
@@ -407,6 +518,7 @@ class AppHandler(BaseHTTPRequestHandler):
             "top_results": [r.to_dict() for r in results[:20]],
             "files": files,
             "logs": logs,
+            "warnings": warnings,
         })
 
 

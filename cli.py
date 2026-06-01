@@ -43,7 +43,10 @@ def cmd_scan_ips(args):
 
 def cmd_run(args):
     print("[1/4] دریافت Subscription...")
-    raw = fetch_url_text(args.sub, timeout=max(12, args.timeout + 8))
+    raw, fetch_error = fetch_url_text(args.sub, timeout=max(12, args.timeout + 8))
+    if fetch_error and not raw:
+        print(f"[WARNING] Subscription fetch error: {fetch_error}")
+        raise SystemExit(f"خطا در دریافت Subscription: {fetch_error}")
     lines = split_subscription_lines(raw)
     parsed = parse_configs(lines)
     base = [c.raw for c in parsed]
