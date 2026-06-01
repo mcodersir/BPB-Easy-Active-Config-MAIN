@@ -149,9 +149,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: BPB Easy Active Config MAIN v9.0.0
+          name: BPB Easy Active Config MAIN v1.5
           body: |
-            ## BPB Easy Active Config MAIN v9.0.0
+            ## BPB Easy Active Config MAIN v1.5
 
             ### دانلود و نصب
 
@@ -161,13 +161,12 @@ jobs:
             | 🍎 مک | `BPB-Easy-Config-macOS` | دانلود → `chmod +x` → اجرا |
             | 🐧 لینوکس | `BPB-Easy-Config-Linux` | دانلود → `chmod +x` → اجرا |
 
-            ### ویژگی‌ها
-            - ویزارد مرحله‌ای فارسی با 6 مرحله
-            - دیپلوی مستقیم Cloudflare Worker
-            - اسکنر کیفیت IP
-            - تست هوشمند کانفیگ با پروب VLESS WS
-            - بدون نیاز به نصب Python
-            - ریسپانسیو برای موبایل و دسکتاپ
+            ### تغییرات v1.5
+            - رفع خطای HTTP 500 هنگام دریافت Subscription
+            - ساخت کانفیگ الگو وقتی Subscription در دسترس نیست
+            - ذخیره اطلاعات دیپلوی برای استفاده بعدی
+            - اضافه شدن favicon.ico
+            - پیام‌های خطای فارسی بهتر
 
             ### Credits
             - [BPB Worker Panel](https://github.com/bia-pain-bache/BPB-Worker-Panel)
