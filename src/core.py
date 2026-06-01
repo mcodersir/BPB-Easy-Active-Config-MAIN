@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-BPB Easy Active Config MAIN v9 - core utilities
+BPB/Nova Easy Active Config v2 - core utilities
 
 Stdlib-only helpers for legitimate use with the user's own BPB / Cloudflare deployment.
 It fetches a BPB subscription, parses share links, optionally replaces the network endpoint
@@ -26,7 +26,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
-APP_USER_AGENT = "BPB-Easy-Active-Config-MAIN/9.0"
+APP_USER_AGENT = "BPB-Nova-Easy-Active-Config/2.0"
 TLS_PORTS = [443, 8443, 2053, 2083, 2087, 2096]
 
 # Published Cloudflare IPv4 ranges snapshot. Used only for optional random candidate generation.
@@ -1505,7 +1505,14 @@ def test_configs(configs: Sequence[str], timeout: int = 6, workers: int = 24, li
 
 
 def choose_best(results: Sequence[ScanResult]) -> Optional[ScanResult]:
-    """Choose the best config: highest score AND lowest latency among working configs."""
+    """Choose the best config using Nova-aware ranking when available."""
+    try:
+        from nova_core import choose_nova_best
+        nova_best = choose_nova_best(results)
+        if nova_best:
+            return nova_best
+    except Exception:
+        pass
     working = [r for r in results if r.ok and r.score >= WORKING_CONFIG_MIN_SCORE]
     if not working:
         # Fallback: any ok result
@@ -1537,7 +1544,7 @@ def save_outputs(root: Path, base_configs: Sequence[str], generated_configs: Seq
     if best:
         summary_lines = [
             "╔══════════════════════════════════════════════════════════════╗",
-            "║          BPB Easy Active Config MAIN v9 - Best Config       ║",
+            "║             BPB/Nova Easy Active Config v2 - Best           ║",
             "╠══════════════════════════════════════════════════════════════╣",
             f"║  Score:    {best.score:<46} ║",
             f"║  Latency:  {best.latency_ms}ms{'':<42} ║",
@@ -1561,7 +1568,7 @@ def save_outputs(root: Path, base_configs: Sequence[str], generated_configs: Seq
     files["working"].write_text("\n".join(working) + ("\n" if working else ""), encoding="utf-8")
     files["top"].write_text("\n".join([r.config for r in results[:50] if r.config]) + ("\n" if results else ""), encoding="utf-8")
     report_lines = [
-        "گزارش BPB Easy Active Config MAIN v9",
+        "گزارش BPB/Nova Easy Active Config v2",
         "=" * 42,
         f"کانفیگ‌های پایه: {len(base_configs)}",
         f"کانفیگ‌های تولیدشده/تست‌شده: {len(generated_configs)}",
@@ -1582,4 +1589,12 @@ def save_outputs(root: Path, base_configs: Sequence[str], generated_configs: Seq
     else:
         report_lines.append("هیچ کانفیگی برای خروجی انتخاب نشد.")
     files["report"].write_text("\n".join(report_lines) + "\n", encoding="utf-8")
+
+    # Nova Easy Mode outputs: config-only, bundle JSON, Clash/Mihomo YAML, and a Persian report.
+    try:
+        from nova_core import write_nova_outputs
+        files.update({k: Path(v) for k, v in write_nova_outputs(root, base_configs, generated_configs, results, best).items()})
+    except Exception as e:
+        (out_dir / "nova_output_error.txt").write_text(str(e), encoding="utf-8")
+
     return {k: str(v) for k, v in files.items()}

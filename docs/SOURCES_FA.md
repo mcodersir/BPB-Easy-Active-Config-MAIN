@@ -1,49 +1,23 @@
-# منابع ادغام‌شده در پروژه
+# منابع و نحوه استفاده در پروژه
 
-این نرم‌افزار برای کاربر نهایی لینک GitHub باز نمی‌کند. هسته‌های لازم داخل خود پروژه در پوشه `integrated_sources` هستند و UI فقط مسیر Atomic Mail و Cloudflare را باز می‌کند.
+## BPB Worker Panel
+https://github.com/bia-pain-bache/BPB-Worker-Panel
 
-## BPB Worker Panel / Wizard
-
-نقش در این پروژه:
-
-- جریان نصب Worker/Pages و ساخت Subscription
-- ایده پنل و Subscription برای VLESS/Trojan/Warp
-- خروجی سازگار با کلاینت‌های رایج
-
-در این پروژه یک Worker داخلی سبک و BPB-compatible در مسیر زیر قرار دارد:
-
-```text
-integrated_sources/BPB_Worker_Panel_Bundle/worker.js
-```
+استفاده در پروژه: Deploy Worker، تولید Subscription، کانفیگ‌های VLESS/Trojan/Warp و مسیر Worker/Pages.
 
 ## SenPaiScanner
+https://github.com/MatinSenPai/SenPaiScanner
 
-نقش در این پروژه:
+استفاده در پروژه: ایده اسکن سبک endpointهای Cloudflare با تمرکز روی TCP/TLS/HTTP به‌جای ping خام.
 
-- ایده اسکن Endpoint به جای اتکا به ping
-- تست HTTP/TLS روی پورت‌های رایج Cloudflare
-- ذخیره خروجی Clean IP
+## v2ray-config-modifier
+https://github.com/seramo/v2ray-config-modifier
 
-هسته داخلی:
+استفاده در پروژه: ایده تولید گروهی کانفیگ با جایگزینی IP/Endpoint برای چند پروتکل.
 
-```text
-integrated_sources/SenPaiScanner_Core/senpai_scanner_core.py
-```
+## Nova-Proxy
+https://github.com/IRNova/Nova-Proxy
 
-## Rasoul v2ray-config-modifier
+استفاده در پروژه: Nova Easy Mode، Health Check، Best Config، Local Export، خروجی Clash/Mihomo و ساده‌سازی پنل برای کاربر معمولی.
 
-نقش در این پروژه:
-
-- ایده جایگزینی IP/Endpoint روی کانفیگ‌ها
-- تولید گروهی کانفیگ با Clean IP
-- اتصال خروجی Scanner به مرحله ساخت کانفیگ
-
-هسته داخلی:
-
-```text
-integrated_sources/Rasoul_Config_Modifier/config_modifier_core.py
-```
-
-## Cloudflare
-
-Deploy Assistant از Cloudflare API برای نصب Worker داخلی روی اکانت کاربر استفاده می‌کند. کاربر باید API Token معتبر و Account ID درست وارد کند. در v7 نرم‌افزار خطای رایج قرار دادن Token به‌جای Account ID را تشخیص می‌دهد.
+نکته شفافیت: فایل‌های obfuscated وارد مسیر اجرایی اصلی نشده‌اند. بخش‌های لازم به‌صورت خوانا در `src/nova_core.py` بازپیاده‌سازی شده‌اند.

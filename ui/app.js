@@ -59,10 +59,10 @@
   function runPayload() {
     return {
       subscription_url: $('#subUrl').value.trim(),
-      timeout: parseInt($('#timeout').value || '6', 10),
-      workers: parseInt($('#workers').value || '32', 10),
-      limit: parseInt($('#limit').value || '1600', 10),
-      random_count: parseInt($('#randomCount').value || '0', 10),
+      timeout: parseInt($('#timeout').value || '7', 10),
+      workers: parseInt($('#workers').value || '48', 10),
+      limit: parseInt($('#limit').value || '2600', 10),
+      random_count: parseInt($('#randomCount').value || '420', 10),
       mode: document.querySelector('input[name="mode"]:checked').value || 'auto',
       ip_list: $('#ipList').value || '',
       ports: selected('.port')
@@ -237,7 +237,7 @@
         return reader.read().then(function (result) {
           if (result.done) {
             btn.disabled = false;
-            btn.textContent = 'Start — Generate & Test Configs';
+            btn.textContent = 'Start — خروجی کانفیگ سالم';
             return;
           }
 
@@ -290,18 +290,18 @@
             }
             else if (eventType === 'done') {
               progressFill.style.width = '100%';
-              progressText.textContent = 'Done! ' + (data.working_count || 0) + ' working configs found.';
+              progressText.textContent = 'تمام شد! ' + (data.working_count || 0) + ' working configs found.';
 
               if (data.best && data.best.config) {
                 bestConfig.value = data.best.config;
               } else if (data.working_count === 0) {
-                bestConfig.value = 'No working configs found. Try different settings or run IP Scanner first.';
+                bestConfig.value = 'کانفیگ سالم پیدا نشد. Deploy را چک کن یا دوباره Start را بزن تا Nova endpointهای بیشتری تست کند.';
               }
 
               if (data.warnings && data.warnings.length) {
                 toast('Done with warnings: ' + data.warnings[0]);
               } else {
-                toast('Done! ' + (data.working_count || 0) + ' configs OK.');
+                toast('تمام شد! ' + (data.working_count || 0) + ' کانفیگ سالم پیدا شد.');
               }
 
               // Also render any top_results from final payload
@@ -310,7 +310,7 @@
               }
 
               btn.disabled = false;
-              btn.textContent = 'Start — Generate & Test Configs';
+              btn.textContent = 'Start — خروجی کانفیگ سالم';
             }
           }
 
@@ -322,7 +322,7 @@
     }).catch(function (err) {
       progressText.textContent = 'Error: ' + err.message;
       btn.disabled = false;
-      btn.textContent = 'Start — Generate & Test Configs';
+      btn.textContent = 'Start — خروجی کانفیگ سالم';
       toast('Connection error. Retrying without streaming...');
 
       // Fallback to regular POST
@@ -334,8 +334,8 @@
           data.top_results.forEach(function (r) { renderResult(r, resultsDiv); });
         }
         progressFill.style.width = '100%';
-        progressText.textContent = 'Done! ' + (data.working_count || 0) + ' working configs.';
-        toast('Done! ' + (data.working_count || 0) + ' configs OK.');
+        progressText.textContent = 'تمام شد! ' + (data.working_count || 0) + ' working configs.';
+        toast('تمام شد! ' + (data.working_count || 0) + ' کانفیگ سالم پیدا شد.');
       }).catch(function (e2) {
         bestConfig.value = 'Error: ' + e2.message;
         toast('Failed: ' + e2.message);

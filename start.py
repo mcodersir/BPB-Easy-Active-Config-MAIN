@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""BPB Easy Active Config MAIN v2 — Simple few-click deploy & config tool."""
+"""BPB/Nova Easy Active Config v2 — few-click deploy, scan and tested config output."""
 from __future__ import annotations
 
 import json
@@ -41,7 +41,7 @@ from core import (  # noqa: E402
 )
 from cloudflare_deployer import deploy_worker_script, enable_worker_subdomain_route, get_workers_subdomain, list_accounts, verify_token  # noqa: E402
 
-APP_NAME = "BPB Easy Active Config MAIN v2"
+APP_NAME = "BPB/Nova Easy Active Config v2"
 
 SAFE_URLS = {
     "cloudflare_signup": "https://dash.cloudflare.com/sign-up",
@@ -51,6 +51,7 @@ SAFE_URLS = {
     "cloudflare_account_home": "https://dash.cloudflare.com/?to=/:account",
     "atomic_mail": "https://atomicmail.io/app/auth/sign-up",
     "mcoders_github": "https://github.com/mcodersir",
+    "nova_proxy_source": "https://github.com/IRNova/Nova-Proxy",
 }
 
 BUNDLED_WORKER = ROOT_DIR / "integrated_sources" / "BPB_Worker_Panel_Bundle" / "worker.js"
@@ -115,7 +116,7 @@ def find_free_port(start=8765, tries=60):
 
 
 class AppHandler(BaseHTTPRequestHandler):
-    server_version = "BPBEasyActiveConfig/2.0"
+    server_version = "BPBNovaEasyActiveConfig/2.0"
 
     def log_message(self, fmt, *args):
         return
@@ -389,6 +390,15 @@ class AppHandler(BaseHTTPRequestHandler):
         selected_ports = [int(p) for p in data.get("ports", []) if str(p).isdigit()]
         ip_list_text = data.get("ip_list") or ""
 
+        # Nova Easy Mode: stronger defaults, fewer decisions for the user.
+        if mode == "nova_easy":
+            timeout = max(timeout, 7)
+            workers = max(workers, 48)
+            limit = max(limit, 2600)
+            random_count = max(random_count, 420)
+            if not selected_ports:
+                selected_ports = [443, 8443, 2053, 2083, 2087, 2096]
+
         # Save IP list
         save_ip_list(ip_list_text)
 
@@ -438,10 +448,22 @@ class AppHandler(BaseHTTPRequestHandler):
                 endpoints.extend(normalize_ip_list((OUT_DIR / "saved_ips.txt").read_text(encoding="utf-8", errors="ignore")))
             if random_count > 0:
                 endpoints.extend(random_cloudflare_ips(random_count))
-            return expand_ports(list(dict.fromkeys(endpoints)))
+            expanded = expand_ports(list(dict.fromkeys(endpoints)))
+            if mode == "nova_easy" and expanded:
+                self._sse_event("phase", {"phase": "nova_prescan", "message": f"Nova pre-scan: testing {min(len(expanded), 900)} endpoint candidates before generating configs..."})
+                pre_limit = min(len(expanded), 900)
+                pre = scan_endpoints(expanded[:pre_limit], timeout=max(3, min(timeout, 8)), workers=workers, limit=pre_limit, sni_host="speed.cloudflare.com", progress=progress)
+                files = save_ip_scan_outputs(ROOT_DIR, expanded[:pre_limit], pre)
+                ok_eps = [r.endpoint for r in pre if r.ok][:90]
+                if ok_eps:
+                    (OUT_DIR / "saved_ips.txt").write_text("\n".join(ok_eps) + "\n", encoding="utf-8")
+                    self._sse_event("phase", {"phase": "nova_prescan", "message": f"Nova pre-scan: {len(ok_eps)} clean endpoints selected."})
+                    return ok_eps
+                warnings.append("Nova pre-scan did not find strong endpoints; continuing with raw candidates.")
+            return expanded
 
         # Send start event
-        self._sse_event("start", {"message": "Starting config generation..."})
+        self._sse_event("start", {"message": "Nova Easy Mode: آماده‌سازی کانفیگ‌ها و تست واقعی اتصال..."})
 
         # --- Step 1: Get configs (NEVER FAIL - always produce configs) ---
         base_configs = []
@@ -512,10 +534,10 @@ class AppHandler(BaseHTTPRequestHandler):
         target_configs = base_configs[:limit]
         results = []
 
-        if mode in {"auto", "base"}:
+        if mode in {"auto", "base", "nova_easy"}:
             self._sse_event("phase", {"phase": "test_base", "message": f"Testing {len(target_configs)} base configs..."})
             results = test_configs(target_configs, timeout=timeout, workers=workers, limit=limit, progress=progress)
-            if mode == "base" or any(r.ok for r in results):
+            if mode == "base" or (mode == "auto" and any(r.ok for r in results)) or (mode == "nova_easy" and any(r.ok and r.score >= 90 and r.latency_ms < 2500 for r in results)):
                 best = choose_best(results)
                 files = save_outputs(ROOT_DIR, base_configs, target_configs, results, best)
                 self._sse_event("done", {

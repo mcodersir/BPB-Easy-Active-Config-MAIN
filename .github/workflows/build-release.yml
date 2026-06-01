@@ -149,21 +149,21 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: BPB Easy Active Config MAIN v2.0
+          name: BPB/Nova Easy Active Config v2.0
           body: |
-            ## BPB Easy Active Config MAIN v2.0 🚀
+            ## BPB/Nova Easy Active Config v2.0 🚀
 
             ### نسخه ۲ — ساده‌تر، واقعی‌تر، سریع‌تر
 
             تغییرات اصلی:
             - 🎯 **رابط ساده ۳ مرحله‌ای** — Deploy → Test → Copy
             - 📡 **نتایج زنده (SSE Streaming)** — هر کانفیگ به محض تست نمایش داده می‌شود
-            - 🛡️ **Worker جدید با الهام از Nova-Proxy** — تولید خودکار VLESS + Trojan روی تمام پورت‌ها
+            - 🛡️ **Nova Easy Mode** — پیش‌اسکن، رتبه‌بندی بهتر و خروجی آماده import
             - 🔧 **رفع خطای HTTP 500** — همیشه کانفیگ تولید می‌شود، هیچ‌وقت خالی برنمی‌گردد
             - 🔒 **رفع مشکل CSP/eval** — بدون استفاده از eval در JavaScript
             - 💾 **ذخیره خودکار IP** — لیست IPها برای استفاده بعدی ذخیره می‌شود
-            - 📋 **خروجی SingBox** — Worker لینک فرمت SingBox هم تولید می‌کند
-            - 🎨 **UI جدید و مدرن** — با فونت وزیرمتن و طراحی فارسی
+            - 📋 **خروجی‌های آماده** — nova_best_config_only، working configs و Clash/Mihomo YAML
+            - 🎨 **UI جدید و ریسپانسیو** — بدون CDN خارجی و بدون فونت اجباری
 
             ### دانلود و نصب
 
