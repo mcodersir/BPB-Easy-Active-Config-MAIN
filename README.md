@@ -416,17 +416,17 @@ Opens the integrated sources directory.
 This project's source code is protected using multiple layers of obfuscation to prevent unauthorized copying and modification:
 
 ### Python Files
-All Python source files are obfuscated using a **bytecode compilation + zlib compression + base64 encoding** approach:
-- Source code is compiled to Python bytecode objects
-- Bytecode is compressed with zlib (level 9)
+All Python source files are obfuscated using a **zlib compression + base64 encoding on source text** approach:
+- Source code text is compressed with zlib (level 9)
 - Compressed data is base64-encoded and embedded in a loader stub
 - The original source code is completely removed from the files
-- At runtime, the loader decodes, decompresses, and executes the bytecode
+- At runtime, the loader decodes, decompresses, and executes the source text
+- This approach is **version-independent** — works on Python 3.9+ across all platforms
 
 This means:
-- The original variable names, comments, and code structure are not recoverable
-- Direct file inspection reveals only the encoded payload
-- The code still runs normally as Python interprets the bytecode
+- The original code structure, comments, and logic are not directly readable
+- Direct file inspection reveals only the base64-encoded compressed payload
+- The code runs normally on any Python 3.9+ version (Windows, macOS, Linux)
 
 ### JavaScript Files
 All JavaScript files (app.js, worker.js) are obfuscated using **javascript-obfuscator** with:

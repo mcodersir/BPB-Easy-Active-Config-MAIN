@@ -1,4 +1,12 @@
-# OBFUSCATED - BPB Easy Active Config MAIN v9.0.0
-# This file is protected and obfuscated. Unauthorized modification is prohibited.
+# OBFUSCATED_V2 - BPB Easy Active Config MAIN v9.0.0
+# This file is protected. Unauthorized modification is prohibited.
 # Copyright (c) 2026 mcoders
-import base64 as _b;import zlib as _z;import marshal as _m;_d=_b.b64decode('eNptU0tvE0kQnpcfsdECu1mJAwlNOCBrs85xtQixCoRHxCvaOELypdWebjujtKdNzwyROQXkkBxyyA3OXMJDEJlw5jcgZVfqmVzQ7olbIEJcqZ5xoiBhyTX9dVV9Xf3NN/8bh365wXPvHITHBjXqBjWpxc22VbdMg1mWcdWgds+gzksrK305aKnbLYPmnpp1p5uvFO7/O+2HTPqEo0XvPpEUNblYRFHAKGp0UTjP0L0/0dx0tVSb9wLU9DhDVLhRm/lhkKY96G9JEkLDxZmL6E7GwkXLc88hV3DO3BBd4iKiTU4kQ6FYYP4EcV0R+eF4qSNZR28TtCjkApOoEfmUs3FEWYeLLvLCcX2Mj1qRR1l6IgwngQbIO9mEs1EjcKXXCT3ho7m/b1RLH/VNK2YyRElIXE6CwD0sn70vXy2Vjxl1EyS05kDEus0clqPWecgAyqfIHqBCipwBKqYol6J8fYiVABU06hYrQ0k5U2I2BGmuJGXWJh7HkhHaTY65B3IMdo6TjodTZbA7z9wFRpOjmR440wE2jORYcOiiOJL8VqWcFDH2SZthnJQwbgsacb0+gvHdiPAsI/MwVOI0hODJUYyJ7wuYCjgCyBUgJ4s6DOlQ1qV2EMrnxp6WKBnmwiUcZ+7A2h3VTldqA6ZBdwZ/QFg2PpwYWbq+PrztjKiRsffO8DrddsbU6Jn3zq/r4bZzRp08vXR7vbbtnFYnR3Xe/ccZlb/sM1Xy0W14qI2dtXgZ/j0UP1Qb6lnc+29pTW2qLfVC9dXWzhqK36l+vJo8iVcmJkPR9lx0E8RFkN1A6mm8DF2b8QpKnsePqtFfmvMVdAPVYR9m1c/SxBu0swYoXoV1X22iKRLMN4T2sXobr1aj34BjcmYa1fQbgjI0mdkXTU9lPAed2Zlnof5OZmcYfEO9jnswtv480uqpzNpZ7TWojd/Fj+LehK6Nl2G5gva7B0PqEXW5Pvs7tw8Kkk24QL8aXQWyH+WBETi2NIXqa5JLwm96LXRTUK/pfT8mHAfqVW9VckkBY/jYwU7lg++IBdLef2NJcbZ2eWYWX5mUP+u99FUOp4nzmRMvyBMATe2R3yHs2qZpfnJs0/lSNMyxD2bpq5UzT+0aEPZswyrvavj5p8IR60ExpfsGQS7GcQ==');_c=_m.loads(_z.decompress(_d));exec(_c)
+import base64 as _b;import zlib as _z
+_d=_b.b64decode(
+    'eNp1ks1KAzEQx+/7FEO9idWrFAT7odCDUKjQg8iSZrMaut2UbBapJ5F+HfoAnr20Crqs9exzJO3NJ3Gy9sNCDWyYZP7zy8yf3YP8fh6o8Hh4U4BY+flje+P4'
+    'UrTBI4rQgEQRi4C3O0KqzZXjnG7ibIcGvyfSqyuiWMEBXKxNeOBKRrxuAZpCBHAC5ySIWJalgYg9PyCS/SshHe4q0WKhS28ZbTFvh+ZOyBaTrsc6gejuVERx'
+    'M6KSdxQXoRvLoACRkqjI5RynfnlWq7vnRTxeZeKcnizGpo9fD8yjnuip6X0/jHWiZ/pVp3q2GIP50qkZzZ/M8KioRJtTuMBBAbMT0M+mj1WJGcL8xQwOcwdL'
+    '7BsCkAbl9djLgmmW+IDFGE9mhHGqE6iQ6LYp0E/Qn2a0xhRrVbi0jqASipSKOFRQrfyi1sVbLzcygwAnmOh308P+S7XSb0ElM21bbr7MwPSOrNz0MRzCCrDs'
+    '1vZqK2wH9T/WrgTzBCdJ17xdEoQiZmYpOrWcsgh9fgMX+B/6fLtZfBHNtLhr5wcVfCnv'
+)
+exec(_z.decompress(_d).decode('utf-8'))
