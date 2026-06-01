@@ -23,6 +23,9 @@ wheels/
 # PyArmor
 .pyarmor/
 
+# Deploy config (contains API tokens)
+deploy_config.json
+
 # Virtual environments
 .venv/
 venv/

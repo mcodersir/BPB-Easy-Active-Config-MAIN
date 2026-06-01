@@ -1,97 +1,1491 @@
-# OBFUSCATED_V3 - BPB Easy Active Config MAIN v9.0.0
-# This file is protected. Unauthorized modification is prohibited.
-# Copyright (c) 2026 mcoders
+# -*- coding: utf-8 -*-
+"""
+BPB Easy Active Config MAIN v9 - core utilities
+
+Stdlib-only helpers for legitimate use with the user's own BPB / Cloudflare deployment.
+It fetches a BPB subscription, parses share links, optionally replaces the network endpoint
+with user-provided Cloudflare/Clean-IP endpoints, and runs lightweight TCP/TLS/WebSocket checks.
+
+This is not an embedded xray/sing-box core. Final validation should be done in a real client.
+"""
 from __future__ import annotations
-import base64 as _b;import zlib as _z
-_d=_b.b64decode(
-    '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'
-    '1jSryj2ehv1/EeJjkA=='
-)
-exec(_z.decompress(_d).decode('utf-8'))
+
+import base64
+import concurrent.futures
+import ipaddress
+import json
+import random
+import re
+import socket
+import ssl
+import time
+from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
+
+APP_USER_AGENT = "BPB-Easy-Active-Config-MAIN/9.0"
+TLS_PORTS = [443, 8443, 2053, 2083, 2087, 2096]
+
+# Published Cloudflare IPv4 ranges snapshot. Used only for optional random candidate generation.
+CF_IPV4_RANGES = [
+    "173.245.48.0/20", "103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22",
+    "141.101.64.0/18", "108.162.192.0/18", "190.93.240.0/20", "188.114.96.0/20",
+    "197.234.240.0/22", "198.41.128.0/17", "162.158.0.0/15", "104.16.0.0/13",
+    "104.24.0.0/14", "172.64.0.0/13", "131.0.72.0/22",
+]
+
+# SNI rotation list for scanner - Cloudflare domains
+SNI_ROTATION_LIST = [
+    "speed.cloudflare.com",
+    "www.cloudflare.com",
+    "cloudflare.com",
+    "1.1.1.1.cdn.cloudflare.net",
+    "blog.cloudflare.com",
+]
+
+# Cloudflare Worker/Pages commonly available ports. Used by the built-in lightweight scanner.
+HTTP_PORTS = [80, 8080, 8880, 2052, 2082, 2086, 2095]
+ALL_CF_WORKER_PORTS = [443, 8443, 2053, 2083, 2087, 2096, 80, 8080, 8880, 2052, 2082, 2086, 2095]
+
+# Minimum score threshold for a config to be included in working_configs.txt
+WORKING_CONFIG_MIN_SCORE = 50
+
+# Download speed test URL
+SPEED_TEST_URL = "https://speed.cloudflare.com/__down?bytes=65536"
+
+
+@dataclass
+class EndpointScanResult:
+    ok: bool
+    score: int
+    latency_ms: int
+    endpoint: str
+    host: str
+    port: int
+    protocol: str
+    message: str
+    download_speed_kbps: float = 0.0
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+def _rotate_sni(index: int = 0) -> str:
+    """Return an SNI hostname rotated from the SNI_ROTATION_LIST."""
+    return SNI_ROTATION_LIST[index % len(SNI_ROTATION_LIST)]
+
+
+def endpoints_from_cidrs(text: str, limit_per_cidr: int = 256, total_limit: int = 5000) -> List[str]:
+    """Expand small/custom CIDR ranges into IP candidates with a conservative cap."""
+    out: List[str] = []
+    seen = set()
+    limit_per_cidr = max(1, min(int(limit_per_cidr or 256), 2048))
+    total_limit = max(1, min(int(total_limit or 5000), 10000))
+    for raw in (text or '').replace(',', '\n').splitlines():
+        item = raw.strip()
+        if not item or item.startswith('#'):
+            continue
+        try:
+            net = ipaddress.ip_network(item, strict=False)
+        except Exception:
+            continue
+        count = 0
+        iterator = net.hosts() if net.version == 4 and net.num_addresses > 2 else iter(net)
+        for ip in iterator:
+            val = str(ip)
+            if val not in seen:
+                seen.add(val)
+                out.append(val)
+                count += 1
+                if len(out) >= total_limit or count >= limit_per_cidr:
+                    break
+        if len(out) >= total_limit:
+            break
+    return out
+
+
+def expand_scan_endpoints(ip_text: str = '', cidr_text: str = '', random_count: int = 0, ports: Sequence[int] = (443,), limit: int = 5000) -> List[str]:
+    """Build endpoint candidates from manual IPs, CIDRs and optional random Cloudflare IPs."""
+    base: List[str] = []
+    base.extend(normalize_ip_list(ip_text or ''))
+    base.extend(endpoints_from_cidrs(cidr_text or '', total_limit=limit))
+    if int(random_count or 0) > 0:
+        base.extend(random_cloudflare_ips(min(int(random_count or 0), limit)))
+    ports = [int(p) for p in ports if str(p).isdigit()] or [443]
+    out: List[str] = []
+    seen = set()
+    for ep in base:
+        ep = (ep or '').strip()
+        if not ep:
+            continue
+        has_port = False
+        try:
+            right = ep.rsplit(':', 1)[1]
+            has_port = right.isdigit()
+        except Exception:
+            has_port = False
+        candidates = [ep] if has_port else [f'{ep}:{p}' for p in ports]
+        for c in candidates:
+            if c not in seen:
+                seen.add(c)
+                out.append(c)
+                if len(out) >= max(1, int(limit or 5000)):
+                    return out
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Phase 1 probes: Quick TCP/TLS with timeout budget splitting
+# ---------------------------------------------------------------------------
+
+def _tcp_probe(host: str, port: int, timeout: float) -> Tuple[bool, int, str]:
+    """TCP connection probe. Returns (ok, latency_ms, message)."""
+    start = time.time()
+    sock = None
+    try:
+        sock = socket.create_connection((host, int(port)), timeout=max(0.5, timeout))
+        latency = int((time.time() - start) * 1000)
+        return True, latency, "TCP OK"
+    except socket.timeout:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, "TCP timeout"
+    except (ConnectionRefusedError, OSError) as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, f"TCP refused: {str(e)[:80]}"
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, f"TCP error: {str(e)[:80]}"
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+
+
+def _tls_probe(host: str, port: int, sni_host: str, timeout: float) -> Tuple[bool, int, str]:
+    """TLS handshake probe. Returns (ok, latency_ms, message)."""
+    start = time.time()
+    sock = None
+    raw_sock = None
+    try:
+        raw_sock = socket.create_connection((host, int(port)), timeout=max(0.5, timeout))
+        context = ssl.create_default_context()
+        sock = context.wrap_socket(raw_sock, server_hostname=sni_host)
+        sock.settimeout(max(0.5, timeout))
+        cert = sock.getpeercert()
+        latency = int((time.time() - start) * 1000)
+        # Extract Cloudflare colo from cert if present
+        colo = ""
+        if cert:
+            for subj in cert.get("subject", ()):
+                for k, v in subj:
+                    if k == "commonName" and "cloudflare" in v.lower():
+                        colo = v
+        msg = "TLS OK"
+        if colo:
+            msg = f"TLS OK (CF cert: {colo})"
+        return bool(cert), latency, msg
+    except ssl.SSLCertVerificationError as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, f"TLS cert error: {str(e)[:80]}"
+    except socket.timeout:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, "TLS timeout"
+    except (ConnectionRefusedError, OSError) as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, f"TLS refused: {str(e)[:80]}"
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, f"TLS error: {str(e)[:80]}"
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+        try:
+            if raw_sock and raw_sock != sock:
+                raw_sock.close()
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 probes: HTTP + WebSocket DPI detection
+# ---------------------------------------------------------------------------
+
+def _http_probe(host: str, port: int, sni_host: str, timeout: float) -> Tuple[bool, int, str]:
+    """HTTP probe that checks for Cloudflare colo in response. Returns (ok, latency_ms, message)."""
+    start = time.time()
+    sock = None
+    try:
+        if int(port) in TLS_PORTS:
+            raw_sock = socket.create_connection((host, int(port)), timeout=max(0.5, timeout))
+            context = ssl.create_default_context()
+            sock = context.wrap_socket(raw_sock, server_hostname=sni_host)
+        else:
+            sock = socket.create_connection((host, int(port)), timeout=max(0.5, timeout))
+        sock.settimeout(max(0.5, timeout))
+        req = (
+            f'GET /cdn-cgi/trace HTTP/1.1\r\n'
+            f'Host: {sni_host}\r\n'
+            f'User-Agent: {APP_USER_AGENT}\r\n'
+            f'Connection: close\r\n\r\n'
+        )
+        sock.sendall(req.encode('utf-8'))
+        resp = b""
+        while b"\r\n\r\n" not in resp and len(resp) < 4096:
+            try:
+                chunk = sock.recv(2048)
+                if not chunk:
+                    break
+                resp += chunk
+            except socket.timeout:
+                break
+        latency = int((time.time() - start) * 1000)
+        resp_text = resp.decode('utf-8', errors='ignore')
+        first_line = resp_text.splitlines()[0] if resp_text.splitlines() else 'empty response'
+        if not first_line.startswith('HTTP/'):
+            return False, latency, 'No HTTP response'
+        # Check for 2xx status
+        status_match = re.match(r'HTTP/\S+\s+(\d+)', first_line)
+        if not status_match:
+            return False, latency, f'Bad HTTP response: {first_line[:60]}'
+        status_code = int(status_match.group(1))
+        # Check for Cloudflare colo in body
+        colo = ""
+        if b"colo=" in resp:
+            for line in resp_text.splitlines():
+                if line.strip().startswith("colo="):
+                    colo = line.strip().split("=", 1)[1].strip()
+                    break
+        if 200 <= status_code < 300:
+            msg = f"HTTP {status_code} OK"
+            if colo:
+                msg = f"HTTP {status_code} OK (colo={colo})"
+            return True, latency, msg
+        return False, latency, f"HTTP {status_code}"
+    except socket.timeout:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, "HTTP timeout"
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, f"HTTP error: {str(e)[:80]}"
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+
+
+def scan_endpoint_dpi(host: str, port: int, sni_host: str, timeout: float) -> Tuple[bool, str]:
+    """Two-stage DPI detection test.
+
+    Stage 1: Establish TLS connection and hold IDLE for 2 seconds.
+             If the connection gets RST/EOF (not timeout), DPI is detected - endpoint is bad.
+    Stage 2: Send a WebSocket upgrade request. If the server responds with HTTP,
+             WS traffic is not being blocked by DPI.
+
+    Returns (dpi_pass, message).
+    """
+    sock = None
+    raw_sock = None
+    try:
+        # Stage 1: TLS idle hold test
+        if int(port) in TLS_PORTS:
+            try:
+                raw_sock = socket.create_connection((host, int(port)), timeout=max(2, timeout))
+                context = ssl.create_default_context()
+                sock = context.wrap_socket(raw_sock, server_hostname=sni_host)
+                raw_sock = None  # ownership transferred
+                sock.settimeout(2.5)
+                # Hold the connection idle for 2 seconds
+                time.sleep(2.0)
+                # Try a non-blocking read - if we get RST/EOF immediately, DPI detected
+                try:
+                    peek = sock.recv(1, socket.MSG_PEEK)
+                    if peek == b'':
+                        # Connection was closed (EOF) - likely DPI
+                        return False, "DPI detected: connection closed during idle hold"
+                except socket.timeout:
+                    # Timeout is GOOD - means the connection survived the idle period
+                    pass
+                except ConnectionResetError:
+                    # RST during idle - DPI detected
+                    return False, "DPI detected: RST during idle hold"
+                except (ConnectionAbortedError, OSError):
+                    # Connection was killed - possible DPI
+                    return False, "DPI detected: connection aborted during idle hold"
+                except ssl.SSLError:
+                    # SSL error during idle - possible DPI
+                    return False, "DPI detected: SSL error during idle hold"
+            except socket.timeout:
+                return False, "DPI test: TLS connection timeout"
+            except (ConnectionRefusedError, OSError):
+                return False, "DPI test: TLS connection refused"
+            except ssl.SSLCertVerificationError:
+                # Cert error is not DPI, but endpoint is still bad
+                return False, "DPI test: TLS cert verification failed"
+            except Exception as e:
+                return False, f"DPI test: TLS error: {str(e)[:60]}"
+        else:
+            # Non-TLS port: skip idle hold test, just do WS check
+            sock = socket.create_connection((host, int(port)), timeout=max(2, timeout))
+            sock.settimeout(max(2, timeout))
+
+        # Stage 2: WebSocket upgrade request
+        ws_key = base64.b64encode(b"bpb-dpi-scan-v9-probe").decode()
+        ws_req = (
+            f'GET / HTTP/1.1\r\n'
+            f'Host: {sni_host}\r\n'
+            f'Upgrade: websocket\r\n'
+            f'Connection: Upgrade\r\n'
+            f'Sec-WebSocket-Key: {ws_key}\r\n'
+            f'Sec-WebSocket-Version: 13\r\n'
+            f'User-Agent: {APP_USER_AGENT}\r\n\r\n'
+        )
+        try:
+            sock.sendall(ws_req.encode('utf-8'))
+            resp = b""
+            while b"\r\n\r\n" not in resp and len(resp) < 4096:
+                try:
+                    chunk = sock.recv(2048)
+                    if not chunk:
+                        break
+                    resp += chunk
+                except socket.timeout:
+                    break
+            resp_text = resp.decode('utf-8', errors='ignore')
+            if "HTTP/" in resp_text:
+                # Server responded with HTTP - WS traffic is not being blocked by DPI
+                return True, "WS DPI pass: server responded with HTTP"
+            return False, "WS DPI fail: no HTTP response to WS upgrade"
+        except ConnectionResetError:
+            return False, "WS DPI fail: RST after WS upgrade request"
+        except Exception as e:
+            return False, f"WS DPI fail: {str(e)[:60]}"
+    except Exception as e:
+        return False, f"DPI test error: {str(e)[:60]}"
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+        try:
+            if raw_sock:
+                raw_sock.close()
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------------------
+# Phase 3: Download speed test
+# ---------------------------------------------------------------------------
+
+def _download_speed_test(host: str, port: int, sni_host: str, timeout: float = 10.0) -> Tuple[float, str]:
+    """Download speed test by fetching from speed.cloudflare.com/__down?bytes=65536.
+
+    Returns (speed_kbps, message). Speed is 0 if test fails.
+    """
+    sock = None
+    raw_sock = None
+    try:
+        start = time.time()
+        if int(port) in TLS_PORTS:
+            raw_sock = socket.create_connection((host, int(port)), timeout=max(2, timeout))
+            context = ssl.create_default_context()
+            sock = context.wrap_socket(raw_sock, server_hostname=sni_host)
+            raw_sock = None
+        else:
+            sock = socket.create_connection((host, int(port)), timeout=max(2, timeout))
+        sock.settimeout(max(2, timeout))
+
+        req = (
+            f'GET /__down?bytes=65536 HTTP/1.1\r\n'
+            f'Host: speed.cloudflare.com\r\n'
+            f'User-Agent: {APP_USER_AGENT}\r\n'
+            f'Connection: close\r\n\r\n'
+        )
+        sock.sendall(req.encode('utf-8'))
+
+        # Read response
+        data = b""
+        headers_done = False
+        while True:
+            try:
+                chunk = sock.recv(8192)
+                if not chunk:
+                    break
+                data += chunk
+                if not headers_done and b"\r\n\r\n" in data:
+                    headers_done = True
+            except socket.timeout:
+                break
+
+        elapsed = time.time() - start
+        # Separate headers from body
+        body = data
+        if b"\r\n\r\n" in data:
+            body = data.split(b"\r\n\r\n", 1)[1]
+
+        body_size = len(body)
+        if elapsed > 0 and body_size > 0:
+            speed_kbps = (body_size / elapsed) / 1024.0
+            return speed_kbps, f"Speed: {speed_kbps:.1f} KB/s ({body_size} bytes in {elapsed:.2f}s)"
+        return 0, "Speed test: no data received"
+    except Exception as e:
+        return 0, f"Speed test error: {str(e)[:60]}"
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+        try:
+            if raw_sock:
+                raw_sock.close()
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------------------
+# Neighbor IP expansion
+# ---------------------------------------------------------------------------
+
+def expand_neighbor_ips(working_ips: List[str], radius: int = 8, max_per_hit: int = 6, total_max: int = 200) -> List[str]:
+    """For each working IP, probe its neighbors (IP +/- offset) to find clusters.
+
+    Args:
+        working_ips: List of IP addresses that passed Phase 1.
+        radius: How far to look from each working IP (max offset).
+        max_per_hit: Maximum neighbors to generate per working IP.
+        total_max: Maximum total neighbor IPs to generate.
+
+    Returns:
+        List of neighbor IP strings (without ports).
+    """
+    neighbors: List[str] = []
+    seen = set()
+    # Track working IPs to avoid duplicates
+    for ip_str in working_ips:
+        ip_str = ip_str.strip().rsplit(":", 1)[0] if ":" in ip_str and not ip_str.startswith("[") else ip_str.strip()
+        seen.add(ip_str)
+
+    for ip_str in working_ips:
+        if len(neighbors) >= total_max:
+            break
+        # Strip port if present
+        clean_ip = ip_str.strip()
+        if ":" in clean_ip and not clean_ip.startswith("["):
+            clean_ip = clean_ip.rsplit(":", 1)[0]
+        try:
+            ip = ipaddress.ip_address(clean_ip)
+        except Exception:
+            continue
+        if ip.version != 4:
+            continue
+
+        count = 0
+        offsets = list(range(1, radius + 1))
+        random.shuffle(offsets)
+        for offset in offsets:
+            if count >= max_per_hit or len(neighbors) >= total_max:
+                break
+            for delta in (offset, -offset):
+                if count >= max_per_hit or len(neighbors) >= total_max:
+                    break
+                try:
+                    neighbor = str(ipaddress.ip_address(int(ip) + delta))
+                    if neighbor not in seen:
+                        seen.add(neighbor)
+                        neighbors.append(neighbor)
+                        count += 1
+                except Exception:
+                    continue
+    return neighbors
+
+
+# ---------------------------------------------------------------------------
+# Improved scoring function
+# ---------------------------------------------------------------------------
+
+def _score_endpoint(tcp_ok: bool, tls_ok: bool, http_ok: bool, ws_dpi_pass: bool,
+                    latency_ms: int, download_speed_kbps: float = 0.0) -> int:
+    """Score an endpoint based on all test results.
+
+    Scoring:
+    - TCP OK: +20
+    - TLS OK: +25
+    - HTTP OK (2xx + Cloudflare colo): +30
+    - WebSocket DPI pass: +20
+    - Latency < 200ms: +25, < 500ms: +15, < 1000ms: +10
+    - Download speed > 5MB/s: +15, > 1MB/s: +10
+    """
+    score = 0
+    if tcp_ok:
+        score += 20
+    if tls_ok:
+        score += 25
+    if http_ok:
+        score += 30
+    if ws_dpi_pass:
+        score += 20
+    # Latency scoring
+    if latency_ms < 200:
+        score += 25
+    elif latency_ms < 500:
+        score += 15
+    elif latency_ms < 1000:
+        score += 10
+    # Download speed scoring
+    if download_speed_kbps > 5120:  # > 5 MB/s
+        score += 15
+    elif download_speed_kbps > 1024:  # > 1 MB/s
+        score += 10
+    return score
+
+
+# ---------------------------------------------------------------------------
+# Multi-phase scan
+# ---------------------------------------------------------------------------
+
+def scan_endpoint(endpoint: str, sni_host: str = 'speed.cloudflare.com', timeout: int = 5) -> EndpointScanResult:
+    """Single endpoint scan with improved scoring (backward compatible)."""
+    host, port = _parse_endpoint(endpoint, 443)
+    proto = 'tls' if int(port) in TLS_PORTS else 'http'
+
+    # Timeout budget splitting: TCP=1/4, TLS=1/2, HTTP=1/4
+    tcp_timeout = max(1, timeout / 4.0)
+    tls_timeout = max(1, timeout / 2.0)
+    http_timeout = max(1, timeout / 4.0)
+
+    # Use rotated SNI
+    sni = sni_host or 'speed.cloudflare.com'
+
+    tcp_ok = False
+    tls_ok = False
+    http_ok = False
+    ws_dpi_pass = False
+    latency_ms = 999999
+    messages = []
+
+    # TCP probe
+    tcp_ok, tcp_lat, tcp_msg = _tcp_probe(host, port, tcp_timeout)
+    messages.append(tcp_msg)
+    if tcp_ok:
+        latency_ms = tcp_lat
+
+    # TLS probe (for TLS ports)
+    if int(port) in TLS_PORTS:
+        tls_ok, tls_lat, tls_msg = _tls_probe(host, port, sni, tls_timeout)
+        messages.append(tls_msg)
+        if tls_ok and tls_lat < latency_ms:
+            latency_ms = tls_lat
+        if not tls_ok:
+            # If TLS fails, endpoint is likely bad
+            score = _score_endpoint(tcp_ok, tls_ok, http_ok, ws_dpi_pass, latency_ms)
+            return EndpointScanResult(False, score, latency_ms, f'{host}:{port}', host, int(port), proto, " | ".join(messages))
+
+    if not tcp_ok and not tls_ok:
+        score = _score_endpoint(tcp_ok, tls_ok, http_ok, ws_dpi_pass, latency_ms)
+        return EndpointScanResult(False, score, latency_ms, f'{host}:{port}', host, int(port), proto, " | ".join(messages))
+
+    # HTTP probe
+    http_ok, http_lat, http_msg = _http_probe(host, port, sni, http_timeout)
+    messages.append(http_msg)
+    if http_ok and http_lat < latency_ms:
+        latency_ms = http_lat
+
+    ok = (tcp_ok or tls_ok) and (http_ok or tls_ok)
+    score = _score_endpoint(tcp_ok, tls_ok, http_ok, ws_dpi_pass, latency_ms)
+    return EndpointScanResult(ok, score, latency_ms, f'{host}:{port}', host, int(port), proto, " | ".join(messages))
+
+
+def scan_endpoints(endpoints: Sequence[str], timeout: int = 5, workers: int = 48, limit: int = 5000,
+                   sni_host: str = 'speed.cloudflare.com', progress=None) -> List[EndpointScanResult]:
+    """Multi-phase scan based on SenPaiScanner methodology.
+
+    Phase 1: Quick probe all candidates with TCP/TLS
+    Phase 2: For candidates that pass Phase 1, do HTTP + WebSocket DPI test
+    Phase 3: For top 20, do download speed test
+    """
+    items = list(dict.fromkeys([e.strip() for e in endpoints if e and e.strip()]))[:max(1, min(int(limit or 5000), 10000))]
+    total = len(items)
+    results: List[EndpointScanResult] = []
+    workers = max(1, min(int(workers or 48), 120))
+
+    # --- Phase 1: Quick TCP/TLS probe ---
+    phase1_results: List[EndpointScanResult] = []
+    done = 0
+
+    # Timeout budget splitting: TCP=1/4, TLS=1/2
+    tcp_timeout = max(1, timeout / 4.0)
+    tls_timeout = max(1, timeout / 2.0)
+
+    def _phase1_probe(endpoint: str) -> EndpointScanResult:
+        host, port = _parse_endpoint(endpoint, 443)
+        proto = 'tls' if int(port) in TLS_PORTS else 'http'
+        # Rotate SNI based on index
+        sni = sni_host or 'speed.cloudflare.com'
+
+        tcp_ok = False
+        tls_ok = False
+        latency_ms = 999999
+        messages = []
+
+        tcp_ok, tcp_lat, tcp_msg = _tcp_probe(host, port, tcp_timeout)
+        messages.append(tcp_msg)
+        if tcp_ok:
+            latency_ms = tcp_lat
+
+        if int(port) in TLS_PORTS:
+            tls_ok, tls_lat, tls_msg = _tls_probe(host, port, sni, tls_timeout)
+            messages.append(tls_msg)
+            if tls_ok and tls_lat < latency_ms:
+                latency_ms = tls_lat
+
+        passed = tcp_ok or tls_ok
+        score = _score_endpoint(tcp_ok, tls_ok, False, False, latency_ms)
+        return EndpointScanResult(passed, score, latency_ms, f'{host}:{port}', host, int(port), proto, " | ".join(messages))
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(_phase1_probe, ep): ep for ep in items}
+        for fut in concurrent.futures.as_completed(futs):
+            done += 1
+            try:
+                res = fut.result()
+            except Exception as e:
+                ep = futs[fut]
+                host, port = _parse_endpoint(ep, 443)
+                res = EndpointScanResult(False, 0, 999999, f'{host}:{port}', host, int(port), 'unknown', str(e)[:160])
+            phase1_results.append(res)
+            if progress:
+                progress(done, total, res)
+
+    # Sort Phase 1 results
+    phase1_results.sort(key=lambda r: (not r.ok, -r.score, r.latency_ms))
+
+    # --- Phase 2: HTTP + WebSocket DPI test for passing candidates ---
+    passing = [r for r in phase1_results if r.ok]
+    if passing:
+        phase2_map: Dict[str, EndpointScanResult] = {r.endpoint: r for r in phase1_results}
+        done_p2 = 0
+        total_p2 = len(passing)
+
+        def _phase2_probe(r: EndpointScanResult) -> EndpointScanResult:
+            host, port = r.host, r.port
+            sni = sni_host or 'speed.cloudflare.com'
+            http_timeout = max(1, timeout / 4.0)
+
+            http_ok, http_lat, http_msg = _http_probe(host, port, sni, http_timeout)
+            ws_dpi_pass, ws_msg = scan_endpoint_dpi(host, port, sni, timeout=max(2, timeout / 2.0))
+
+            latency_ms = r.latency_ms
+            if http_ok and http_lat < latency_ms:
+                latency_ms = http_lat
+
+            messages = [r.message, http_msg, ws_msg]
+            ok = r.ok and (http_ok or r.port in TLS_PORTS)
+            score = _score_endpoint(True, r.port in TLS_PORTS, http_ok, ws_dpi_pass, latency_ms)
+            return EndpointScanResult(ok, score, latency_ms, r.endpoint, r.host, r.port, r.protocol, " | ".join(messages))
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+            futs2 = {ex.submit(_phase2_probe, r): r for r in passing}
+            for fut in concurrent.futures.as_completed(futs2):
+                done_p2 += 1
+                try:
+                    res = fut.result()
+                    phase2_map[res.endpoint] = res
+                except Exception:
+                    pass
+
+        # Rebuild results from phase2_map
+        results = list(phase2_map.values())
+        results.sort(key=lambda r: (not r.ok, -r.score, r.latency_ms))
+    else:
+        results = phase1_results
+
+    # --- Phase 3: Download speed test for top 20 ---
+    top_candidates = [r for r in results if r.ok][:20]
+    if top_candidates:
+        speed_map: Dict[str, float] = {}
+
+        def _phase3_probe(r: EndpointScanResult) -> Tuple[str, float, str]:
+            sni = sni_host or 'speed.cloudflare.com'
+            speed, msg = _download_speed_test(r.host, r.port, sni, timeout=max(5, timeout * 2))
+            return r.endpoint, speed, msg
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(workers, 10)) as ex:
+            futs3 = {ex.submit(_phase3_probe, r): r for r in top_candidates}
+            for fut in concurrent.futures.as_completed(futs3):
+                try:
+                    ep, speed, msg = fut.result()
+                    speed_map[ep] = speed
+                except Exception:
+                    pass
+
+        # Update results with speed scores
+        for r in results:
+            if r.endpoint in speed_map:
+                speed = speed_map[r.endpoint]
+                r.download_speed_kbps = speed
+                # Recalculate score including speed
+                has_tls = r.port in TLS_PORTS
+                r.score = _score_endpoint(True, has_tls, True, True, r.latency_ms, speed)
+
+        results.sort(key=lambda r: (not r.ok, -r.score, r.latency_ms))
+
+    # --- Neighbor IP expansion ---
+    working_ips = [r.host for r in results if r.ok and r.score >= 40]
+    if working_ips:
+        neighbor_ips = expand_neighbor_ips(working_ips, radius=8, max_per_hit=6, total_max=200)
+        if neighbor_ips:
+            # Quick probe neighbors
+            neighbor_endpoints = [f"{ip}:443" for ip in neighbor_ips]
+            neighbor_results = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+                futs_n = {ex.submit(_phase1_probe, ep): ep for ep in neighbor_endpoints}
+                for fut in concurrent.futures.as_completed(futs_n):
+                    try:
+                        nr = fut.result()
+                        if nr.ok:
+                            neighbor_results.append(nr)
+                    except Exception:
+                        pass
+
+            # Merge neighbor results that aren't duplicates
+            existing_endpoints = {r.endpoint for r in results}
+            for nr in neighbor_results:
+                if nr.endpoint not in existing_endpoints:
+                    results.append(nr)
+                    existing_endpoints.add(nr.endpoint)
+
+            results.sort(key=lambda r: (not r.ok, -r.score, r.latency_ms))
+
+    return results
+
+
+def save_ip_scan_outputs(root: Path, endpoints: Sequence[str], results: Sequence[EndpointScanResult]) -> Dict[str, str]:
+    out_dir = root / 'output'
+    out_dir.mkdir(exist_ok=True)
+    clean = [r.endpoint for r in results if r.ok]
+    files = {
+        'candidates': out_dir / 'ip_candidates.txt',
+        'clean': out_dir / 'clean_ips.txt',
+        'results': out_dir / 'ip_scan_results.json',
+        'report': out_dir / 'ip_scan_report_FA.txt',
+    }
+    files['candidates'].write_text('\n'.join(endpoints) + ('\n' if endpoints else ''), encoding='utf-8')
+    files['clean'].write_text('\n'.join(clean) + ('\n' if clean else ''), encoding='utf-8')
+    files['results'].write_text(json.dumps([r.to_dict() for r in results], ensure_ascii=False, indent=2), encoding='utf-8')
+    lines = [
+        'گزارش اسکن IP - BPB Easy Active Config MAIN v9',
+        '=' * 48,
+        f'کاندیدها: {len(endpoints)}',
+        f'IP/Endpoint سالم: {len(clean)}',
+        '',
+        'بهترین‌ها:',
+    ]
+    for r in results[:30]:
+        speed_info = f" | speed: {r.download_speed_kbps:.1f}KB/s" if r.download_speed_kbps > 0 else ""
+        lines.append(f"{'OK' if r.ok else 'FAIL'} | {r.endpoint} | {r.latency_ms}ms | score: {r.score}{speed_info} | {r.message}")
+    files['report'].write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    return {k: str(v) for k, v in files.items()}
+
+
+@dataclass
+class ParsedConfig:
+    raw: str
+    scheme: str
+    host: str
+    port: int
+    security: str
+    network: str
+    path: str
+    sni: str
+    ws_host: str
+    user_id: str
+    fragment: str
+    display_name: str
+
+@dataclass
+class ScanResult:
+    ok: bool
+    score: int
+    latency_ms: int
+    endpoint: str
+    config: str
+    message: str
+    config_name: str
+    scheme: str
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+def fetch_url_text(url: str, timeout: int = 18) -> str:
+    url = (url or "").strip()
+    if not (url.startswith("http://") or url.startswith("https://")):
+        raise ValueError("لینک Subscription باید با http:// یا https:// شروع شود.")
+    req = Request(url, headers={"User-Agent": APP_USER_AGENT, "Accept": "text/plain,*/*"})
+    try:
+        with urlopen(req, timeout=timeout) as response:
+            data = response.read()
+        return data.decode("utf-8", errors="ignore")
+    except HTTPError as e:
+        # Handle HTTP errors gracefully
+        try:
+            body = e.read().decode("utf-8", errors="ignore")
+        except Exception:
+            body = ""
+        return f"[HTTP Error {e.code}: {e.reason}] {body[:200]}"
+    except URLError as e:
+        return f"[URL Error: {str(e)[:200]}]"
+    except Exception as e:
+        return f"[Fetch Error: {str(e)[:200]}]"
+
+
+def maybe_decode_subscription(text: str) -> str:
+    raw = (text or "").strip()
+    if not raw:
+        return ""
+    compact = "".join(raw.split())
+    try:
+        padded = compact + "=" * (-len(compact) % 4)
+        decoded = base64.b64decode(padded, validate=False).decode("utf-8", errors="ignore")
+        if any(x in decoded for x in ("vless://", "trojan://", "vmess://", "wireguard://", "ss://")):
+            return decoded
+    except Exception:
+        pass
+    return text
+
+
+def split_subscription_lines(text: str) -> List[str]:
+    decoded = maybe_decode_subscription(text)
+    out: List[str] = []
+    for line in decoded.replace("\r", "\n").split("\n"):
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        # Skip error messages from fetch_url_text
+        if s.startswith("[HTTP Error") or s.startswith("[URL Error") or s.startswith("[Fetch Error"):
+            continue
+        out.append(s)
+    return out
+
+
+def _qdict(query: str) -> Dict[str, List[str]]:
+    q: Dict[str, List[str]] = {}
+    for k, v in parse_qsl(query, keep_blank_values=True):
+        q.setdefault(k, []).append(v)
+    return q
+
+
+def _qget(q: Dict[str, List[str]], key: str, default: str = "") -> str:
+    vals = q.get(key)
+    return vals[0] if vals else default
+
+
+def _b64url_decode(s: str) -> str:
+    s = s.strip()
+    # Handle URL-safe Base64: replace - with + and _ with /
+    s = s.replace("-", "+").replace("_", "/")
+    s += "=" * (-len(s) % 4)
+    try:
+        return base64.b64decode(s.encode(), validate=False).decode("utf-8", errors="ignore")
+    except Exception:
+        # Fallback: try urlsafe_b64decode
+        try:
+            return base64.urlsafe_b64decode(s.encode()).decode("utf-8", errors="ignore")
+        except Exception:
+            return ""
+
+
+def _b64url_encode(s: str) -> str:
+    return base64.urlsafe_b64encode(s.encode("utf-8")).decode().rstrip("=")
+
+
+def parse_share_link(raw: str) -> Optional[ParsedConfig]:
+    """Parse a share link into a ParsedConfig. Returns None on any error."""
+    try:
+        raw = (raw or "").strip()
+        if not raw or "://" not in raw:
+            return None
+        p = urlparse(raw)
+        scheme = p.scheme.lower()
+
+        if scheme in {"vless", "trojan"}:
+            if not p.hostname:
+                return None
+            q = _qdict(p.query)
+            security = _qget(q, "security", "tls" if (p.port or 0) in TLS_PORTS else "")
+            network = _qget(q, "type", _qget(q, "network", "tcp")) or "tcp"
+            try:
+                port = int(p.port or (443 if security in {"tls", "reality"} else 80))
+            except (ValueError, TypeError):
+                port = 443
+            path = _qget(q, "path", "/") or "/"
+            sni = _qget(q, "sni", _qget(q, "peer", p.hostname)) or p.hostname
+            ws_host = _qget(q, "host", sni) or sni
+            display = p.fragment or f"{scheme.upper()} {p.hostname}:{port}"
+            return ParsedConfig(raw, scheme, p.hostname, port, security, network, path, sni, ws_host, p.username or "", p.fragment, display)
+
+        if scheme == "vmess":
+            try:
+                payload = _b64url_decode(raw.split("://", 1)[1])
+                if not payload:
+                    return None
+                data = json.loads(payload)
+                if not isinstance(data, dict):
+                    return None
+                host = str(data.get("add") or "").strip()
+                if not host:
+                    return None
+                try:
+                    port = int(data.get("port") or 443)
+                except (ValueError, TypeError):
+                    port = 443
+                network = str(data.get("net") or data.get("type") or "tcp")
+                security = "tls" if str(data.get("tls") or "").lower() == "tls" or port in TLS_PORTS else ""
+                path = str(data.get("path") or "/")
+                sni = str(data.get("sni") or data.get("host") or host)
+                ws_host = str(data.get("host") or sni)
+                ps = str(data.get("ps") or f"VMESS {host}:{port}")
+                return ParsedConfig(raw, scheme, host, port, security, network, path, sni, ws_host, str(data.get("id") or ""), ps, ps)
+            except (json.JSONDecodeError, ValueError, TypeError):
+                return None
+
+        # WireGuard/WARP configs are kept in subscription outputs but are not deeply modified/tested here.
+        return None
+    except Exception:
+        return None
+
+
+def parse_configs(lines: Sequence[str]) -> List[ParsedConfig]:
+    configs: List[ParsedConfig] = []
+    seen = set()
+    for line in lines:
+        cfg = parse_share_link(line)
+        if cfg and cfg.raw not in seen:
+            configs.append(cfg)
+            seen.add(cfg.raw)
+    return configs
+
+
+def _is_ip_address(host: str) -> bool:
+    try:
+        ipaddress.ip_address(host.strip("[]"))
+        return True
+    except Exception:
+        return False
+
+
+def _parse_endpoint(endpoint: str, default_port: int) -> Tuple[str, int]:
+    endpoint = (endpoint or "").strip()
+    if not endpoint:
+        raise ValueError("endpoint خالی است")
+    if "://" in endpoint:
+        p = urlparse(endpoint)
+        if not p.hostname:
+            raise ValueError(f"endpoint نامعتبر: {endpoint}")
+        try:
+            port = int(p.port or default_port)
+        except (ValueError, TypeError):
+            port = default_port
+        return p.hostname, port
+    p = urlparse("//" + endpoint)
+    if p.hostname:
+        try:
+            port = int(p.port or default_port)
+        except (ValueError, TypeError):
+            port = default_port
+        return p.hostname, port
+    return endpoint, int(default_port)
+
+
+def _host_for_netloc(host: str) -> str:
+    h = host.strip("[]")
+    try:
+        ip = ipaddress.ip_address(h)
+        return f"[{ip.compressed}]" if ip.version == 6 else ip.compressed
+    except Exception:
+        return h
+
+
+def normalize_ip_list(text: str) -> List[str]:
+    """Accept one item per line, IP:port, URL, CSV, or plain text containing IPs."""
+    out: List[str] = []
+    seen = set()
+    for raw_line in (text or "").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        # CSV first field support.
+        if "," in line:
+            line = line.split(",", 1)[0].strip()
+        # Keep URL/IP:port as-is when parseable; otherwise extract IPv4.
+        candidates = [line]
+        if not (":" in line or "://" in line):
+            candidates = re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", line) or [line]
+        for c in candidates:
+            c = c.strip()
+            if not c or c in seen:
+                continue
+            out.append(c)
+            seen.add(c)
+    return out
+
+
+def random_cloudflare_ips(count: int) -> List[str]:
+    count = max(0, min(int(count or 0), 5000))
+    nets = [ipaddress.ip_network(x) for x in CF_IPV4_RANGES]
+    results: List[str] = []
+    seen = set()
+    while len(results) < count:
+        net = random.choice(nets)
+        # Avoid network/broadcast by staying inside usable range where possible.
+        if net.num_addresses <= 4:
+            offset = random.randrange(0, net.num_addresses)
+        else:
+            offset = random.randrange(1, net.num_addresses - 1)
+        ip = str(net.network_address + offset)
+        if ip not in seen:
+            seen.add(ip)
+            results.append(ip)
+    return results
+
+
+def _replace_vless_trojan(raw_config: str, endpoint: str) -> str:
+    try:
+        p = urlparse(raw_config.strip())
+        cfg = parse_share_link(raw_config)
+        if not cfg:
+            return raw_config.strip()
+        new_host, new_port = _parse_endpoint(endpoint, cfg.port)
+        q_items = parse_qsl(p.query, keep_blank_values=True)
+        q: Dict[str, str] = dict(q_items)
+
+        # If endpoint becomes a clean IP, preserve the original domain for Cloudflare routing.
+        if _is_ip_address(new_host) and cfg.host and not _is_ip_address(cfg.host):
+            q.setdefault("sni", cfg.host)
+            n = (q.get("type") or q.get("network") or cfg.network or "").lower()
+            if n in {"ws", "websocket", "grpc", "xhttp"}:
+                q.setdefault("host", cfg.host)
+
+        userinfo = p.netloc.split("@", 1)[0] + "@" if "@" in p.netloc else ""
+        netloc = f"{userinfo}{_host_for_netloc(new_host)}:{int(new_port)}"
+        query = urlencode(q, doseq=True)
+        return urlunparse((p.scheme, netloc, p.path, p.params, query, p.fragment))
+    except Exception:
+        return raw_config.strip()
+
+
+def _replace_vmess(raw_config: str, endpoint: str) -> str:
+    try:
+        payload = _b64url_decode(raw_config.split("://", 1)[1])
+        if not payload:
+            return raw_config.strip()
+        data = json.loads(payload)
+        if not isinstance(data, dict):
+            return raw_config.strip()
+        old_host = str(data.get("add") or "").strip()
+        try:
+            old_port = int(data.get("port") or 443)
+        except (ValueError, TypeError):
+            old_port = 443
+        new_host, new_port = _parse_endpoint(endpoint, old_port)
+        data["add"] = new_host
+        data["port"] = str(new_port)
+        if _is_ip_address(new_host) and old_host and not _is_ip_address(old_host):
+            data.setdefault("sni", old_host)
+            if str(data.get("net") or "").lower() in {"ws", "grpc", "xhttp"}:
+                data.setdefault("host", old_host)
+        return "vmess://" + _b64url_encode(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
+    except Exception:
+        return raw_config.strip()
+
+
+def replace_endpoint(raw_config: str, endpoint: str) -> str:
+    """Replace the endpoint in a config. Returns original config on ANY error."""
+    try:
+        scheme = urlparse(raw_config.strip()).scheme.lower()
+        if scheme in {"vless", "trojan"}:
+            return _replace_vless_trojan(raw_config, endpoint)
+        if scheme == "vmess":
+            return _replace_vmess(raw_config, endpoint)
+        return raw_config.strip()
+    except Exception:
+        return raw_config.strip()
+
+
+def generate_modified_configs(base_configs: Sequence[str], endpoints: Sequence[str], limit: int = 2000) -> List[str]:
+    limit = max(1, min(int(limit or 2000), 20000))
+    out: List[str] = []
+    seen = set()
+    for cfg in base_configs:
+        parsed = parse_share_link(cfg)
+        if not parsed:
+            continue
+        for ep in endpoints:
+            try:
+                mod = replace_endpoint(cfg, ep)
+            except Exception:
+                continue
+            if mod not in seen:
+                seen.add(mod)
+                out.append(mod)
+                if len(out) >= limit:
+                    return out
+    return out
+
+
+def tcp_tls_test(cfg: ParsedConfig, timeout: int = 6) -> Tuple[bool, int, str]:
+    start = time.time()
+    try:
+        raw_sock = socket.create_connection((cfg.host, int(cfg.port)), timeout=max(1, int(timeout)))
+        if cfg.security in {"tls", "reality"} or cfg.port in TLS_PORTS:
+            context = ssl.create_default_context()
+            with context.wrap_socket(raw_sock, server_hostname=cfg.sni or cfg.host) as ssock:
+                ssock.settimeout(max(1, int(timeout)))
+                cert = ssock.getpeercert()
+                latency = int((time.time() - start) * 1000)
+                return bool(cert or cfg.security == "reality"), latency, "TLS OK" if cert else "TLS connected"
+        else:
+            raw_sock.close()
+            latency = int((time.time() - start) * 1000)
+            return True, latency, "TCP OK"
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, str(e)[:180]
+
+
+def websocket_probe(cfg: ParsedConfig, timeout: int = 6) -> Optional[Tuple[bool, int, str]]:
+    if (cfg.network or "").lower() not in {"ws", "websocket"}:
+        return None
+    start = time.time()
+    path = cfg.path or "/"
+    if not path.startswith("/"):
+        path = "/" + path
+    key = base64.b64encode(b"bpb-easy-active-v9").decode()
+    host_header = cfg.ws_host or cfg.sni or cfg.host
+    req = (
+        f"GET {path} HTTP/1.1\r\n"
+        f"Host: {host_header}\r\n"
+        f"Upgrade: websocket\r\n"
+        f"Connection: Upgrade\r\n"
+        f"Sec-WebSocket-Key: {key}\r\n"
+        f"Sec-WebSocket-Version: 13\r\n"
+        f"User-Agent: {APP_USER_AGENT}\r\n\r\n"
+    )
+    sock = None
+    try:
+        sock = socket.create_connection((cfg.host, int(cfg.port)), timeout=max(1, int(timeout)))
+        if cfg.security in {"tls", "reality"} or cfg.port in TLS_PORTS:
+            context = ssl.create_default_context()
+            sock = context.wrap_socket(sock, server_hostname=cfg.sni or cfg.host)
+        sock.settimeout(max(1, int(timeout)))
+        sock.sendall(req.encode("utf-8"))
+        resp = sock.recv(768).decode("utf-8", errors="ignore")
+        latency = int((time.time() - start) * 1000)
+        first = resp.splitlines()[0] if resp.splitlines() else "empty response"
+        if "101 Switching Protocols" in resp:
+            return True, latency, "WebSocket 101 OK"
+        if "HTTP/" in resp:
+            return False, latency, f"WS responded but no 101: {first}"
+        return False, latency, "No HTTP/WebSocket response"
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, str(e)[:180]
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+
+
+def _uuid_to_bytes(uuid: str) -> Optional[bytes]:
+    clean = (uuid or "").strip().replace("-", "").lower()
+    if not re.fullmatch(r"[0-9a-f]{32}", clean):
+        return None
+    return bytes(int(clean[i:i+2], 16) for i in range(0, 32, 2))
+
+
+def _ws_frame(payload: bytes, opcode: int = 2) -> bytes:
+    """Build a masked client-to-server WebSocket frame."""
+    payload = payload or b""
+    first = 0x80 | (opcode & 0x0F)
+    n = len(payload)
+    mask_key = random.randbytes(4) if hasattr(random, "randbytes") else bytes(random.getrandbits(8) for _ in range(4))
+    if n < 126:
+        header = bytes([first, 0x80 | n])
+    elif n < 65536:
+        header = bytes([first, 0x80 | 126]) + n.to_bytes(2, "big")
+    else:
+        header = bytes([first, 0x80 | 127]) + n.to_bytes(8, "big")
+    masked = bytes(b ^ mask_key[i % 4] for i, b in enumerate(payload))
+    return header + mask_key + masked
+
+
+def _ws_read_frame(sock, timeout: int = 6) -> bytes:
+    sock.settimeout(max(1, int(timeout)))
+    head = sock.recv(2)
+    if len(head) < 2:
+        return b""
+    b1, b2 = head[0], head[1]
+    length = b2 & 0x7F
+    if length == 126:
+        length = int.from_bytes(sock.recv(2), "big")
+    elif length == 127:
+        length = int.from_bytes(sock.recv(8), "big")
+    masked = bool(b2 & 0x80)
+    mask = sock.recv(4) if masked else b""
+    data = b""
+    while len(data) < length:
+        chunk = sock.recv(length - len(data))
+        if not chunk:
+            break
+        data += chunk
+    if masked and mask:
+        data = bytes(b ^ mask[i % 4] for i, b in enumerate(data))
+    return data
+
+
+def _build_vless_probe_payload(cfg: ParsedConfig) -> Optional[bytes]:
+    uid = _uuid_to_bytes(cfg.user_id)
+    if not uid:
+        return None
+    target = b"www.cloudflare.com"
+    http = b"GET /cdn-cgi/trace HTTP/1.1\r\nHost: www.cloudflare.com\r\nConnection: close\r\n\r\n"
+    # version + uuid + optlen + command TCP + port 80 + domain address + early data
+    return bytes([0]) + uid + bytes([0, 1]) + (80).to_bytes(2, "big") + bytes([2, len(target)]) + target + http
+
+
+def vless_ws_proxy_probe(cfg: ParsedConfig, timeout: int = 6) -> Optional[Tuple[bool, int, str]]:
+    """Validate VLESS-over-WebSocket more deeply by doing a real WS upgrade and a tiny VLESS TCP request.
+
+    This is still a lightweight validation, but it is stronger than only TCP/TLS ping because it checks:
+    1) TLS/socket reachability, 2) correct WS path/host, 3) UUID acceptance, 4) remote TCP response.
+    """
+    if cfg.scheme != "vless" or (cfg.network or "").lower() not in {"ws", "websocket"}:
+        return None
+    probe_payload = _build_vless_probe_payload(cfg)
+    if not probe_payload:
+        return None
+    start = time.time()
+    path = cfg.path or "/"
+    if not path.startswith("/"):
+        path = "/" + path
+    key = base64.b64encode(random.randbytes(16) if hasattr(random, "randbytes") else bytes(random.getrandbits(8) for _ in range(16))).decode()
+    host_header = cfg.ws_host or cfg.sni or cfg.host
+    req = (
+        f"GET {path} HTTP/1.1\r\n"
+        f"Host: {host_header}\r\n"
+        f"Upgrade: websocket\r\n"
+        f"Connection: Upgrade\r\n"
+        f"Sec-WebSocket-Key: {key}\r\n"
+        f"Sec-WebSocket-Version: 13\r\n"
+        f"User-Agent: {APP_USER_AGENT}\r\n\r\n"
+    )
+    sock = None
+    try:
+        raw = socket.create_connection((cfg.host, int(cfg.port)), timeout=max(1, int(timeout)))
+        if cfg.security in {"tls", "reality"} or cfg.port in TLS_PORTS:
+            context = ssl.create_default_context()
+            sock = context.wrap_socket(raw, server_hostname=cfg.sni or cfg.host)
+        else:
+            sock = raw
+        sock.settimeout(max(1, int(timeout)))
+        sock.sendall(req.encode("utf-8"))
+        resp = b""
+        while b"\r\n\r\n" not in resp and len(resp) < 4096:
+            part = sock.recv(1024)
+            if not part:
+                break
+            resp += part
+        first = resp.decode("utf-8", errors="ignore").splitlines()[0] if resp else "empty response"
+        if b" 101 " not in resp and b"101 Switching Protocols" not in resp:
+            latency = int((time.time() - start) * 1000)
+            return False, latency, f"WS upgrade failed: {first}"
+        sock.sendall(_ws_frame(probe_payload, opcode=2))
+        data = _ws_read_frame(sock, timeout=timeout)
+        latency = int((time.time() - start) * 1000)
+        if len(data) >= 2:
+            body = data[2:]
+            if b"HTTP/" in body or b"colo=" in body or len(body) > 12:
+                return True, latency, "VLESS WS proxy OK"
+        return False, latency, "WS upgraded but VLESS probe had no useful response"
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        return False, latency, str(e)[:180]
+    finally:
+        try:
+            if sock:
+                sock.close()
+        except Exception:
+            pass
+
+
+def score_result(tcp_ok: bool, tcp_latency: int, ws_result: Optional[Tuple[bool, int, str]]) -> int:
+    score = 0
+    if tcp_ok:
+        score += 50
+    if tcp_latency < 350:
+        score += 35
+    elif tcp_latency < 800:
+        score += 25
+    elif tcp_latency < 1600:
+        score += 15
+    elif tcp_latency < 3000:
+        score += 7
+    if ws_result:
+        ws_ok, ws_latency, _ = ws_result
+        if ws_ok:
+            score += 35
+        if ws_latency < tcp_latency + 500:
+            score += 10
+    return score
+
+
+def test_one(raw_config: str, timeout: int = 6) -> ScanResult:
+    """Test a single config. Wrapped in try/except to never crash."""
+    try:
+        cfg = parse_share_link(raw_config)
+        if not cfg:
+            return ScanResult(False, 0, 999999, "-", raw_config, "Unsupported or invalid config", "Invalid", "-")
+        endpoint = f"{cfg.host}:{cfg.port}"
+
+        actual_vless = vless_ws_proxy_probe(cfg, timeout=timeout)
+        if actual_vless is not None:
+            ok, latency, msg = actual_vless
+            score = (95 if ok else 0)
+            if ok:
+                if latency < 350:
+                    score += 35
+                elif latency < 800:
+                    score += 25
+                elif latency < 1600:
+                    score += 15
+                elif latency < 3000:
+                    score += 7
+            return ScanResult(ok, score, latency, endpoint, raw_config, msg, cfg.display_name, cfg.scheme)
+
+        tcp_ok, tcp_latency, tcp_msg = tcp_tls_test(cfg, timeout=timeout)
+        ws = websocket_probe(cfg, timeout=timeout)
+        score = score_result(tcp_ok, tcp_latency, ws)
+        msg = tcp_msg
+        if ws:
+            msg += " | " + ws[2]
+        ok = tcp_ok and (ws[0] if ws else True)
+        return ScanResult(ok, score, tcp_latency, endpoint, raw_config, msg, cfg.display_name, cfg.scheme)
+    except Exception as e:
+        return ScanResult(False, 0, 999999, "-", raw_config, f"Error: {str(e)[:120]}", "Error", "-")
+
+
+def test_configs(configs: Sequence[str], timeout: int = 6, workers: int = 24, limit: int = 2000, progress=None) -> List[ScanResult]:
+    items = list(dict.fromkeys([c.strip() for c in configs if c and c.strip()]))[:max(1, int(limit or 2000))]
+    total = len(items)
+    results: List[ScanResult] = []
+    workers = max(1, min(int(workers or 24), 80))
+    done = 0
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+        future_map = {ex.submit(test_one, cfg, timeout): cfg for cfg in items}
+        for fut in concurrent.futures.as_completed(future_map):
+            done += 1
+            try:
+                res = fut.result()
+            except Exception as e:
+                cfg = future_map[fut]
+                res = ScanResult(False, 0, 999999, "-", cfg, str(e)[:180], "Error", "-")
+            results.append(res)
+            if progress:
+                progress(done, total, res)
+    results.sort(key=lambda r: (not r.ok, -r.score, r.latency_ms))
+    return results
+
+
+def choose_best(results: Sequence[ScanResult]) -> Optional[ScanResult]:
+    """Choose the best config: highest score AND lowest latency among working configs."""
+    working = [r for r in results if r.ok and r.score >= WORKING_CONFIG_MIN_SCORE]
+    if not working:
+        # Fallback: any ok result
+        working = [r for r in results if r.ok]
+    if not working:
+        return results[0] if results else None
+    # Sort by highest score, then lowest latency
+    working.sort(key=lambda r: (-r.score, r.latency_ms))
+    return working[0]
+
+
+def save_outputs(root: Path, base_configs: Sequence[str], generated_configs: Sequence[str], results: Sequence[ScanResult], best: Optional[ScanResult]) -> Dict[str, str]:
+    out_dir = root / "output"
+    out_dir.mkdir(exist_ok=True)
+    files = {
+        "base": out_dir / "base_configs.txt",
+        "generated": out_dir / "generated_configs.txt",
+        "results": out_dir / "scan_results.json",
+        "best": out_dir / "best_active_config.txt",
+        "working": out_dir / "working_configs.txt",
+        "top": out_dir / "top_active_configs.txt",
+        "report": out_dir / "report_FA.txt",
+    }
+    files["base"].write_text("\n".join(base_configs) + ("\n" if base_configs else ""), encoding="utf-8")
+    files["generated"].write_text("\n".join(generated_configs) + ("\n" if generated_configs else ""), encoding="utf-8")
+    files["results"].write_text(json.dumps([r.to_dict() for r in results], ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # Best config with summary section
+    if best:
+        summary_lines = [
+            "╔══════════════════════════════════════════════════════════════╗",
+            "║          BPB Easy Active Config MAIN v9 - Best Config       ║",
+            "╠══════════════════════════════════════════════════════════════╣",
+            f"║  Score:    {best.score:<46} ║",
+            f"║  Latency:  {best.latency_ms}ms{'':<42} ║",
+            f"║  Endpoint: {best.endpoint:<46} ║",
+            f"║  Scheme:   {best.scheme:<46} ║",
+            f"║  Name:     {best.config_name:<46} ║",
+            f"║  Message:  {best.message[:46]:<46} ║",
+            "╚══════════════════════════════════════════════════════════════╝",
+            "",
+            best.config,
+        ]
+        files["best"].write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
+    else:
+        files["best"].write_text("", encoding="utf-8")
+
+    # Only include configs that scored >= WORKING_CONFIG_MIN_SCORE in working_configs.txt
+    working = [r.config for r in results if r.ok and r.score >= WORKING_CONFIG_MIN_SCORE]
+    if not working:
+        # Fallback: include any ok config even if score is low
+        working = [r.config for r in results if r.ok]
+    files["working"].write_text("\n".join(working) + ("\n" if working else ""), encoding="utf-8")
+    files["top"].write_text("\n".join([r.config for r in results[:50] if r.config]) + ("\n" if results else ""), encoding="utf-8")
+    report_lines = [
+        "گزارش BPB Easy Active Config MAIN v9",
+        "=" * 42,
+        f"کانفیگ‌های پایه: {len(base_configs)}",
+        f"کانفیگ‌های تولیدشده/تست‌شده: {len(generated_configs)}",
+        f"نتایج تست: {len(results)}",
+        f"کانفیگ‌های سالم (score >= {WORKING_CONFIG_MIN_SCORE}): {len(working)}",
+        "",
+    ]
+    if best:
+        report_lines += [
+            "بهترین کانفیگ پیشنهادی:",
+            best.config,
+            "",
+            f"Endpoint: {best.endpoint}",
+            f"Latency: {best.latency_ms} ms",
+            f"Score: {best.score}",
+            f"Message: {best.message}",
+        ]
+    else:
+        report_lines.append("هیچ کانفیگی برای خروجی انتخاب نشد.")
+    files["report"].write_text("\n".join(report_lines) + "\n", encoding="utf-8")
+    return {k: str(v) for k, v in files.items()}

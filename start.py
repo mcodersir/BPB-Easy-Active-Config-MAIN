@@ -1,60 +1,445 @@
-# OBFUSCATED_V3 - BPB Easy Active Config MAIN v9.0.0
-# This file is protected. Unauthorized modification is prohibited.
-# Copyright (c) 2026 mcoders
+# -*- coding: utf-8 -*-
+"""Launch a local step-by-step web wizard for BPB Easy Active Config MAIN v9."""
 from __future__ import annotations
-import base64 as _b;import zlib as _z
-_d=_b.b64decode(
-    'eNq9W19z28iRf+enmMJWboEsBdJa2/HxwqRkWU5U9loqSd48KCoUCA5FrEAAiwEkMQqrbq82ch70lKf7Btq4EqucvdRVXvI5SPstnyTdMwNg8I+UvIk3FVOc'
-    '6e7p6enp/k3P8BOy9uM14gRD1z/ukSQerT3CllbLnYRBFJOvWOCnf0/cCY2nIWVpQ5D9xQLnhMbZt2nWEY8jaqPwtOGMDgZRcMZo1BpFwYSM4zg04dspjYgk'
-    'eWwz+suDg909+nVCWfxL2x96NGqTg1QWdu5zFiEjtOOx5w5S/l34KjqSyIN2M7QjRtPexP86CWLaau3t7BxYT7b3SJ9z6JY1cj1qWYYZURZ4p1Q3kJP6cWt/'
-    'b1NSZkwdorHI0Vovt2t6Eldr7bw8qOkJkjhM4qzXnJwM3Uin5y6LreCkfxAl1GiB/Uyck+n6YJlY77YJiyNdamEYLTE7J4iyWemEfEL84Gu7R7bud9dbBP7b'
-    'eP7c2nxq/Wpn79nWnrW7s3ew3+YdzjgIGLUGYFzRQM9DMLLFHNu3qD8MA9ePmega0dgZW2BIK6bnkvyY+jSyY2pNwG9GLh1aTuCP3GPJ4gfRxPbc31DLDS3P'
-    'TQfhq1CkjGDUYGI5XpAMRx7YGjhkF7NPOT/XSVhN7Sm21OjNQs+NLZYMmBO5YewGPqjiU9kbw9RzVQxpz1yNIQ29YJq7pPhunQXRCY0sIbJNqG8PwGPS1mQA'
-    'k7Fd34pAO9oGM8Wyj+WdbYIWsWzHCRJUloAXu6OpFQcn1C8tYmtjd9d6sfHFFjiR9nj3Mdmy2ZRsOLF7Sskm1558sbH9gpz+p9nVWq39jadb1su95/tAf8Hn'
-    'qSlzYu6xn4Raj2i451iv0xnabGzmFKYTTDpItQZk7Qo/Ug8COxquElHDm5ohtI8pW8X/8zjod3rSQh3JugausibYq+Lt0BUGXCk7jALc5R3gWJMcNeLE0NY4'
-    'mNA7KZvKsuNg4joWrLen8otmbDXdAFQIO3YSj8smn0A0Rlsdu/E4Gaj8ooUPK4ncCLhmrdbjly+ePN96Ivd6KebApqDHuF9hhwdJ5IAJsRkcyvqVcN1d26ee'
-    '9TjBQMv7hNHNrxh4VWtIR2TkQnwYRZRauB90FttR3H/0k4cP2iSOXMr6D7tGTwSMICJ8z7g+7u9jKogxhMEH+UzQS2L87wxmJROIKT50+W3jqbX9Yuugnfbu'
-    '72w+s/YP9rY2vjCIzQjLhfBNHU2LDTwOmANQXde1e+s/Mbvwv3tam+sHYbRMG9E4iXzeW+ij5w4NY7KzvxVFQVQdAwJJ7PoJlTHNhWSzB94A6ZIz6NqLgKDt'
-    'iBc4tiesMwJ/GWoQyluOZzNGNsJQJjq9Pv9Ji4lUaZ3i4ge+DAwYF0RYEFGhI+IB0uPiecGxNaGM2bgY1Bu1yWgCC/JjOzpWF0JMP2ezGMRUCxGA5Brasc3X'
-    'MU5Yf73bVXhDe+oF9hD0QXpzmExCpgt62GMJbirmuG7/qe0xapjUR//VNQ44tHwlcByTDws5OAwg/eliuDqSMaABMJcGc44hS68dADaBxdVgY3muY2PM76A2'
-    '/wUJD3NP3G8erizrOfWP47EmEq9HfV1O0DCWctvOmK6hjCjwUBU/WGMxpOnymDkT00tdZxifzLPIjWk2qLImCIHyNVFWwOMawwLAdud9phzAhDxUMzGtqxkE'
-    '9ip+ZkLcUSrnZ+SR1e128f9Fhxf+/aXtJal3z2/mb+dvFr+fX8+/n78m8zfvrxbfvr8i8+/mf5m/fXdDRIepjBPZZ6Ap1zLi88Vp6WJowxxS1TvAg3Ac1tcg'
-    'TnJbKmpScCeiXcy0khcLN0TjMR0Hw4kClWLJYWD9YuugbEWQzLVC+EX6sLswU3SED2pFQ3A6ZY9cVOICeiLE7zSLt6sEA0RAGOLBQNfzN/PXi1dk/n/zG/x4'
-    'DRb9fv7/RIZ6rYY97VqdIyqsfmA5Qx84EXLW9AuAZQE6BRrcBBKxGjW01QSj8K3IRHXyBjwRDVNgFUIsANcFecU0Z3LYDBvoFiJgOaU+RRl1vLbn8SyHdm3E'
-    '0AUOQJYnSJ0BsCLNrJhqZJxd7nJBSP01eVoo+h32WKPAw4iTLspyx9SCE7nQH6xJvnJrYuglSq1a8R+mrJJyeLiT5zk909zk0F/Xfg6R455x2D0qhLd8bqUZ'
-    'SHFaB+ACPTfH8cTLgwo/GUoKXR75OpzF9MCp3FAHeYZycmw1gpJMFBB7NuZsgK5SZs6fC5DgY4t/QEqrCULcejxI6ve7n69aYj+IFSXSPYQRMm91+Q7WjVWD'
-    '3V86mIPVArBYVjgwjwHQMAv/1nEvZgMauE48SKvJO3BiGkMCheQwydcCUQUIVe0IKXEwhTOdvhRJIGK5PYwQyn9GdK2MH9CIvNfkkJYhgNU1PB53REoVrIB/'
-    'L4pYxD61xdFRm8nEpRkfBEbQBBUkcktMwXkLaXB3Z7+SBytuuyQ2JJGn1QBvpMaDGQ8NQKMXfYV69SJ5wWGZPE5wS2FYGVhzQ7ZMHq8eAM0tRUaJv0wadN9S'
-    'kDNaE2f/ZeKckSWIbi9U1CpWCBVEFaGMNrBVIzRH8gAjeShABLL43fz791fzt4B3tsnicn4NDX+bvwYU+DZDgLM2KQSNcnDDUx3ttT5geNwa1AD5D3CXZ+5d'
-    'cMCSj8tAIgbIcXWu3QmdYrxHOgGioUGCZs0wRdzPqWEEoM4gAOcABqMce4FuFaJG+Ly4fPdHgtCa4DeBrMGki0uy+Pv87eL37/4XQOLiUnSp2DqvsJo4cx3G'
-    'K4WD+nQLxuQ7GRWc4cFUtWHuh3c1oihsFcyYlWuajSltxalWWQv97YCP8u6Pi2/B1W4W38AneN3b+TXh55K38xvsvFTtxGVbcGBzTkA9tQyn839zyrRYB2SF'
-    '4l2ZbvmJQFh6EASergwtLMISB6ARYKMSHtWEmXqqsiWKVBkgSv8UMiHvJV4MWePwiJ+Yir3ZiCITHR41iLXg9KSIzqlmRsVDZFD5OB6SFuncYYk1a2/mlacC'
-    '357QIrPSIbkH4WAtxPJY3Y5PyoNjS/OwLBlkIDLnSVslH3zNWc0cXGadOQCOgvMpZK6iuLT1dnsLafCLYk3Zopji1htwfkU2hCCy/QR2nkwDRJQZCd+cf4Hv'
-    '1YJAGhvBfqtGe/kSZGNWmV9jkUEenGF7w1CXi2/eX727IV8+39rfv8V4DQfKlfH5Gxx78S3GZxidVzuwPp+VTbMOUj0AdRoKrxDXIZjfYMi6xBpAoV7C9zIs'
-    'dN1FhAgnbWUN2+rqtUuzbHMr9/GfduaS/fSPduZW/fSPggPLKw5x9QEKvQh8WtmTGV2ZQKqF10ljsEy5G1ZFzLQUo0qIoKrF0puYFfYpYqC6KdRe5FSlGreo'
-    'RicD3K2VQQoRm2/ci5mRhQdBo1UL1ogBk0F1mHpTj7Ii0YUy/Zl5ATJmppygOaSnnYvUG5S62uqz6C0W+NYZstYNyskxRbrSaUq9ZTdBkFhqqs95+bLkiU+5'
-    'wCvylCYMHKWWEr0Px0SLxTRk1sgG6sNqNWl+/Q5hX9mUpRIhxNrFK4DY14gIM7yIiEeAxt8hSMTyKwKh7zAQSgTUbhwxF5MPJWIRDMalbmaXXzwCQ4QXgYyR'
-    '/yC7eDlH/nH5B5LlTP7tS5e5cf2waZCc/xUi6p9htDRRpEeJDm4Y+Os6b8IJw6niDbB+94//vkqrpXzi+TQx+ewrl7+CAHogxko7FPQ5asQ14rh5V0yDG0gc'
-    'CIqZPr+NRqzdmKIBdPH7dty1hQt4XQpuE7xegujWx3J/PoRsFZLvPVJqBPz2G3VuuBjX0zENpcIWMYoIp3B1r3PynCotQmK5b2DndGZ8DnqIqoPQXfu1r5lf'
-    'BRA7hQheXYE2Xs/n6qVVEbw1Eo9S+vV3RCtiSLWoDUg6tj0xVSDAKopQohI1Qqz95m8aJLGwRZmantuT0OMSDx1z6IJx7anAlXgP6mARSHAe9h4dlTE2vmQY'
-    'Fsvr9UZsRt1Z8eLOoFs4irwvanCgB2XIzCr0sl3Q33+k+tvErYrnL0KgQzroA7UkB33S5wv02JbulLy06A6jKnXWWqFPX5pwbFpWSu0UnIpW/CYAWA6RJzTE'
-    '/TauqwK5+WVBdtDC5QwN02VD99iNdYMXNg/v3/88DzLMd61xwOJSfJCtKdgPKR2W3hvksaKZJK+upE9iECHVPfHRpXnbuT3bBVOJq3LWFqvZ5/9WQHQmbuVF'
-    'YQbaAY/zKI0RG0Ev2d6FFLO5/WRPRHu8/OJljxv4c/5XcaYHxsJh/v2VCpG94JgvU25k3COAYY8BHTB9CDAEgiYGgTbiBaNS3kQK8tM+ubeOpuXf+n3BkTX8'
-    'iKw/wNZuFfng+KYdhmANfaRdIPmsc8HZZ+S35OLTnWefSoBrBici0n36dGP7+ae8G5tTQ2YNHpwbfGdqTdhswtJGeZM/qxwPeHQvrm/+KCrLF/IzhcCsLz8L'
-    'a9zOPLSf/tHObNlP/zAK9yN8+JpXW9l9UJso6kiVcxGOR20E24dRZge+1yL+kEROEO0H1jv6ockA1Bu6Q3zCJja9iPGZekYNyINcVCDm+pYJeaPFC85iQoe9'
-    'e91u96iSi0JLTgkzR2TGgTV0HYgVlSkf9u53K4mDmxs4+WepD/0QVQyOlxRrsEr9kSHNJBjSQrDGBkluJ3Gg3S01Pbxjavp8fVVqUvPSQzUvfXjuuAOMm9jn'
-    '+r317DtAo48C3lSsgZvPMfG1RAm7HJUjvsq1slby6v3Vu8ua8kznIAq+sv3Ol19AKCGL/0FAj2eB11ireX+Vl1AKOL6mSKIGA+ogdPsX5OyPnle6DXkF357g'
-    'xtF2nmnl/KFh/tDunIq4yA/POgVDSFzBzakE0IoV0G2K69Nren+XSSnVHnAg7tHKWqQvDilf3gYk0liOwf/GNuP6YHEfc0BoRvIBQY8/IDBwXdYJjE0qfYf3'
-    'jnKXqUhfXS0pjc/vtOqKPClNvYTUMumS07BGl9qrvQI3RA/kPgSPoeGsd4EDzrTCe87iAh7VXf7zGxIdk5mJj6pP6BTcQg5hlHzHCTyUZ4msmaOWkveoMLby'
-    'trx8tsjQc6lcBlZUz1hZopan1PrKb2H01EBVFZYJ5pmUh/zyibb6rs2oqFxIPT+rCw8V9Wrf1OuqIKN23QobuW4Rs72tLmMIrsmjE6YEJYXbERZN88SiZozD'
-    'Hk+1RzXwFXZ21voJ2Z/gi2HECQh1IjgunYLhEbbBCsOm8yGCYtk9PSuT7RHBaIqJHyDmMBAXGTYDBsyr0EnG1D6dwnEj/RED7EtTTW8cpoinGwhK2nJms1Ka'
-    'yzRWf0mgF6d9Z8y9BGCr2vVTc6Of2/5UR0hcAY41row/+ACVlZ9/6BUYXovoq0heXc82Kc9bSm3zEY3VLwpqA1MTeM/6ue8BCf9soJF65rBdVdxoYMqmk7MV'
-    'Z9jEKOZdYEwN3MBRd7I4jJoPPk1y0NBYO4cP5TABXHzNOVjAQnzThO9yHlmvnEducy5Zfj5peClZ9+zvE7LJT4qwhXE3tHETMB4oRrbnDWznhJyNqc89FBMn'
-    'xACSMH5PJC8VqsErDdpaYY/lrQJsYUCw0kYrHa2+3NKY2v4FxZM/A5L+dv46t4NSRSlXSOZ5sWX+ltPyQvn1/E9pQVwQLa26pGyLb+Z/w7Frqi+VgN/4GzG9'
-    'GDqUksCyGlNR/kpb4TXA9u7ilTDYDZ/Jq/y2oO5MohxAUiso18vZTYhZW3b5SFngNgH83xG4P7DKsiRA3ykw3zkg3z4Q/9AA/GGB94cG3A8rAPEfcqkPtfGG'
-    't8d//CrBgnycwn8Oy5/llh40Fw5ReGrGH6rCcRF0nhQew57hdXXphTgTFKgyf/wr3v1iQMfnsj0iUPChHcfRGmjq+mrhQbx3VIbjEXpoRzhS6bApf4ScDGAD'
-    '4cVx+fGAbDZ3+fO4Qw0/5ONarpNyrqkem+4s/Xx4vNYwQvMBMbRBsFgw/tYgXR9xTiz9GM9QfhgGvTU/k677+Vtb+cmZkCCKe+KVQK/TyTjkUbAjMl0YYVEF'
-    'Donpz1pmxGUkSnwfhhS/cPOmPRklBXH2AlF8VVLZG35J/Se8y/47xFdISspd7nfQciMy02YceZ9t8l8U5Y/4st+WmwcQWSO9az6EUGpPBkO7V/sK0hAeWOfM'
-    'wnrih+iwPSKKVius0jM65b9+3fZjOLcloXIYl9P6tZ/OJ9VwhEcUr2GYCM9oDLdWqwXObfFrQ8vijm1Z/JWCJV1b+EDrnyjcQLg='
+
+import json
+import mimetypes
+import os
+import socket
+import sys
+import threading
+import webbrowser
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import unquote
+
+ROOT_DIR = Path(__file__).resolve().parent
+SRC_DIR = ROOT_DIR / "src"
+UI_DIR = ROOT_DIR / "ui"
+OUT_DIR = ROOT_DIR / "output"
+CONFIG_FILE = ROOT_DIR / "deploy_config.json"
+OUT_DIR.mkdir(exist_ok=True)
+sys.path.insert(0, str(SRC_DIR))
+
+from core import (  # noqa: E402
+    ALL_CF_WORKER_PORTS,
+    choose_best,
+    expand_scan_endpoints,
+    fetch_url_text,
+    generate_modified_configs,
+    normalize_ip_list,
+    parse_configs,
+    random_cloudflare_ips,
+    save_ip_scan_outputs,
+    save_outputs,
+    scan_endpoints,
+    split_subscription_lines,
+    test_configs,
 )
-exec(_z.decompress(_d).decode('utf-8'))
+from cloudflare_deployer import deploy_worker_script, enable_worker_subdomain_route, get_workers_subdomain, list_accounts, verify_token  # noqa: E402
+
+APP_NAME = "BPB Easy Active Config MAIN v9.0"
+
+SAFE_URLS = {
+    "cloudflare_signup": "https://dash.cloudflare.com/sign-up",
+    "cloudflare_dashboard": "https://dash.cloudflare.com/",
+    "cloudflare_workers_pages": "https://dash.cloudflare.com/?to=/:account/workers-and-pages",
+    "cloudflare_api_tokens": "https://dash.cloudflare.com/profile/api-tokens",
+    "cloudflare_account_home": "https://dash.cloudflare.com/?to=/:account",
+    "atomic_mail": "https://atomicmail.io/app/auth/sign-up",
+    "mcoders_github": "https://github.com/mcodersir",
+}
+
+BUNDLED_WORKER = ROOT_DIR / "integrated_sources" / "BPB_Worker_Panel_Bundle" / "worker.js"
+
+
+def save_deploy_config(data: dict):
+    """Save deploy info to a local JSON file for next time."""
+    try:
+        payload = {
+            "api_token": (data.get("api_token") or "").strip(),
+            "account_id": (data.get("account_id") or "").strip(),
+            "worker_name": (data.get("worker_name") or "bpb-panel").strip(),
+            "uuid": (data.get("uuid") or "").strip(),
+            "sub_path": (data.get("sub_path") or "sub").strip().strip("/") or "sub",
+            "proxy_ip": (data.get("proxy_ip") or "").strip(),
+        }
+        CONFIG_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def load_deploy_config() -> dict:
+    """Load saved deploy info from the local JSON file."""
+    try:
+        if CONFIG_FILE.exists():
+            return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+
+def find_free_port(start=8765, tries=60):
+    for port in range(start, start + tries):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(("127.0.0.1", port))
+                return port
+            except OSError:
+                continue
+    raise RuntimeError("No free local port found")
+
+
+class AppHandler(BaseHTTPRequestHandler):
+    server_version = "BPBEasyActiveConfig/9.0"
+
+    def log_message(self, fmt, *args):
+        return
+
+    def _send_json(self, data, status=200):
+        payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def _read_json(self):
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length > 8_000_000:
+            raise ValueError("درخواست خیلی بزرگ است.")
+        raw = self.rfile.read(length).decode("utf-8", errors="ignore") if length else "{}"
+        return json.loads(raw or "{}")
+
+    def do_GET(self):
+        if self.path == "/api/status":
+            self._send_json({
+                "app": APP_NAME,
+                "brand": "ساخته شده توسط mcoders",
+                "mcoders": "https://github.com/mcodersir",
+                "no_cdn": True,
+                "output_dir": str(OUT_DIR),
+                "integrated_sources_dir": str(ROOT_DIR / "integrated_sources"),
+                "bundled_worker_present": BUNDLED_WORKER.exists(),
+                "bundled_worker_path": str(BUNDLED_WORKER),
+                "all_ports": ALL_CF_WORKER_PORTS,
+                "links": SAFE_URLS,
+            })
+            return
+        if self.path == "/api/open-output":
+            open_folder(OUT_DIR)
+            self._send_json({"ok": True})
+            return
+        if self.path == "/api/open-integrated-folder":
+            open_folder(ROOT_DIR / "integrated_sources")
+            self._send_json({"ok": True})
+            return
+        if self.path == "/api/deploy-config":
+            cfg = load_deploy_config()
+            # Mask the API token - show only last 4 chars
+            token = cfg.get("api_token", "")
+            if token and len(token) > 4:
+                cfg["api_token_masked"] = "*" * (len(token) - 4) + token[-4:]
+            else:
+                cfg["api_token_masked"] = token
+            # Don't send the full token to the frontend
+            cfg.pop("api_token", None)
+            self._send_json({"ok": True, "config": cfg})
+            return
+
+        path = unquote(self.path.split("?", 1)[0])
+        if path == "/":
+            path = "/index.html"
+        file_path = (UI_DIR / path.lstrip("/")).resolve()
+        try:
+            file_path.relative_to(UI_DIR.resolve())
+        except Exception:
+            self.send_error(403)
+            return
+        if not file_path.exists() or file_path.is_dir():
+            self.send_error(404)
+            return
+        ctype = mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
+        data = file_path.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", ctype + ("; charset=utf-8" if ctype.startswith("text/") or ctype in {"application/javascript"} else ""))
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_POST(self):
+        try:
+            if self.path == "/api/open-url":
+                self.api_open_url()
+            elif self.path == "/api/fetch":
+                self.api_fetch()
+            elif self.path == "/api/scan-ips":
+                self.api_scan_ips()
+            elif self.path == "/api/run":
+                self.api_run()
+            elif self.path == "/api/cf-verify":
+                self.api_cf_verify()
+            elif self.path == "/api/cf-deploy":
+                self.api_cf_deploy()
+            else:
+                self._send_json({"ok": False, "error": "مسیر API نامعتبر است."}, 404)
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
+
+    def api_open_url(self):
+        data = self._read_json()
+        key = (data.get("key") or "").strip()
+        url = SAFE_URLS.get(key)
+        if not url:
+            raise ValueError("لینک در لیست امن پروژه نیست.")
+        webbrowser.open(url)
+        self._send_json({"ok": True, "url": url})
+
+
+    def api_cf_verify(self):
+        data = self._read_json()
+        token = (data.get("api_token") or "").strip()
+        if not token:
+            raise ValueError("API Token کلادفلر را وارد کن.")
+        token_check = verify_token(token)
+        accounts = list_accounts(token)
+        # Save token and account_id after successful verification
+        if token_check.get("success"):
+            save_data = {"api_token": token}
+            acc_list = accounts.get("result", []) if accounts.get("success") else []
+            if acc_list:
+                save_data["account_id"] = acc_list[0].get("id", "")
+            # Merge with existing config to preserve other fields
+            existing = load_deploy_config()
+            existing.update(save_data)
+            save_deploy_config(existing)
+        self._send_json({
+            "ok": bool(token_check.get("success")),
+            "token": token_check,
+            "accounts": accounts.get("result", []) if accounts.get("success") else [],
+            "accounts_raw": accounts,
+        })
+
+    def api_cf_deploy(self):
+        data = self._read_json()
+        token = (data.get("api_token") or "").strip()
+        account_id = (data.get("account_id") or "").strip()
+        worker_name = (data.get("worker_name") or "bpb-panel").strip()
+        uuid = (data.get("uuid") or "").strip()
+        sub_path = (data.get("sub_path") or "sub").strip().strip("/") or "sub"
+        proxy_ip = (data.get("proxy_ip") or "").strip()
+        if not token or not account_id or not worker_name:
+            raise ValueError("API Token، Account ID و نام Worker لازم است.")
+        if not uuid:
+            raise ValueError("UUID برای ساخت کانفیگ VLESS لازم است.")
+        if not BUNDLED_WORKER.exists():
+            raise ValueError("فایل داخلی BPB worker.js داخل integrated_sources/BPB_Worker_Panel_Bundle پیدا نشد.")
+        result = deploy_worker_script(token, account_id, worker_name, BUNDLED_WORKER, uuid=uuid, sub_path=sub_path, proxy_ip=proxy_ip)
+        # Save all deploy info after successful deploy
+        if result.get("success"):
+            save_deploy_config({
+                "api_token": token,
+                "account_id": account_id,
+                "worker_name": worker_name,
+                "uuid": uuid,
+                "sub_path": sub_path,
+                "proxy_ip": proxy_ip,
+            })
+        subdomain_enable = None
+        account_subdomain = None
+        worker_url_hint = None
+        if result.get("success"):
+            subdomain_enable = enable_worker_subdomain_route(token, account_id, worker_name)
+            account_subdomain = get_workers_subdomain(token, account_id)
+            try:
+                sub = (account_subdomain.get("result") or {}).get("subdomain")
+                if sub:
+                    worker_url_hint = f"https://{worker_name}.{sub}.workers.dev/{sub_path}"
+            except Exception:
+                worker_url_hint = None
+        self._send_json({
+            "ok": bool(result.get("success")),
+            "deploy": result,
+            "subdomain_enable": subdomain_enable,
+            "account_subdomain": account_subdomain,
+            "worker_url_hint": worker_url_hint,
+            "next_steps_fa": [
+                "اگر worker_url_hint ساخته شد، همان لینک را در مرورگر باز کن.",
+                "اگر لینک ساخته نشد، در Cloudflare برو Workers & Pages → bpb-panel → Visit.",
+                "داخل صفحه Worker مسیر /sub یا مسیر انتخاب‌شده را باز کن و Subscription را کپی کن."
+            ]
+        })
+
+    def api_fetch(self):
+        data = self._read_json()
+        sub_url = (data.get("subscription_url") or "").strip()
+        raw_text = fetch_url_text(sub_url, timeout=int(data.get("timeout") or 18))
+        lines = split_subscription_lines(raw_text)
+        parsed = parse_configs(lines)
+        (OUT_DIR / "base_configs.txt").write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+        self._send_json({
+            "ok": True,
+            "total_lines": len(lines),
+            "supported_configs": len(parsed),
+            "examples": [c.display_name for c in parsed[:8]],
+            "saved": str(OUT_DIR / "base_configs.txt"),
+        })
+
+    def api_scan_ips(self):
+        data = self._read_json()
+        timeout = int(data.get("timeout") or 5)
+        workers = int(data.get("workers") or 48)
+        limit = int(data.get("ip_limit") or 1500)
+        ip_text = data.get("ip_text") or ""
+        cidr_text = data.get("cidr_text") or ""
+        random_count = int(data.get("random_count") or 0)
+        ports = [int(p) for p in data.get("ports", []) if str(p).isdigit()] or [443]
+        sni_host = (data.get("sni_host") or "speed.cloudflare.com").strip() or "speed.cloudflare.com"
+        endpoints = expand_scan_endpoints(ip_text, cidr_text, random_count, ports, limit=limit)
+        if not endpoints:
+            raise ValueError("برای اسکن باید IP، CIDR یا تولید تصادفی وارد کنی.")
+        logs = []
+        def progress(done, total, res):
+            if done <= 12 or done == total or done % 25 == 0:
+                logs.append(f"{done}/{total} | {'OK' if res.ok else 'FAIL'} | {res.endpoint} | {res.latency_ms}ms | {res.message}")
+        results = scan_endpoints(endpoints, timeout=timeout, workers=workers, limit=limit, sni_host=sni_host, progress=progress)
+        files = save_ip_scan_outputs(ROOT_DIR, endpoints, results)
+        clean = [r.endpoint for r in results if r.ok]
+        self._send_json({
+            "ok": True,
+            "candidate_count": len(endpoints),
+            "working_count": len(clean),
+            "clean_ips": clean[:1000],
+            "top_results": [r.to_dict() for r in results[:40]],
+            "files": files,
+            "logs": logs,
+        })
+
+    def api_run(self):
+        data = self._read_json()
+        sub_url = (data.get("subscription_url") or "").strip()
+        mode = data.get("mode") or "auto"
+        timeout = int(data.get("timeout") or 6)
+        workers = int(data.get("workers") or 32)
+        limit = int(data.get("limit") or 1600)
+        random_count = int(data.get("random_count") or 0)
+        raw_text = fetch_url_text(sub_url, timeout=max(12, timeout + 8))
+        lines = split_subscription_lines(raw_text)
+        parsed = parse_configs(lines)
+        base_configs = [c.raw for c in parsed]
+        if not base_configs:
+            raise ValueError("هیچ کانفیگ VLESS/Trojan/VMess قابل تستی داخل Subscription پیدا نشد.")
+
+        selected_ports = [int(p) for p in data.get("ports", []) if str(p).isdigit()]
+        logs = []
+        def progress(done, total, res):
+            if done <= 12 or done == total or done % 20 == 0:
+                state = "OK" if res.ok else "FAIL"
+                logs.append(f"{done}/{total} | {state} | {res.endpoint} | {res.latency_ms}ms | {res.message}")
+
+        def expand_ports(endpoints):
+            if not selected_ports:
+                return endpoints
+            expanded = []
+            for ep in endpoints:
+                try:
+                    has_port = len(ep.rsplit(":", 1)) == 2 and ep.rsplit(":", 1)[1].isdigit()
+                except Exception:
+                    has_port = False
+                if has_port:
+                    expanded.append(ep)
+                else:
+                    expanded.extend([f"{ep}:{port}" for port in selected_ports])
+            return list(dict.fromkeys(expanded))
+
+        def collect_clean_endpoints():
+            endpoints = normalize_ip_list(data.get("ip_list") or "")
+            if (OUT_DIR / "clean_ips.txt").exists():
+                endpoints.extend(normalize_ip_list((OUT_DIR / "clean_ips.txt").read_text(encoding="utf-8", errors="ignore")))
+            if random_count > 0:
+                endpoints.extend(random_cloudflare_ips(random_count))
+            return expand_ports(list(dict.fromkeys(endpoints)))
+
+        phase = "base"
+        target_configs = base_configs[:limit]
+        results = []
+
+        # Smart mode: first validate original BPB configs. If one works, do not waste time on heavy IP generation.
+        if mode in {"auto", "base"}:
+            results = test_configs(target_configs, timeout=timeout, workers=workers, limit=limit, progress=progress)
+            if mode == "base" or any(r.ok for r in results):
+                best = choose_best(results)
+                files = save_outputs(ROOT_DIR, base_configs, target_configs, results, best)
+                self._send_json({
+                    "ok": True,
+                    "phase": phase,
+                    "base_count": len(base_configs),
+                    "target_count": len(target_configs),
+                    "result_count": len(results),
+                    "working_count": len([r for r in results if r.ok]),
+                    "best": best.to_dict() if best else None,
+                    "top_results": [r.to_dict() for r in results[:20]],
+                    "files": files,
+                    "logs": logs,
+                })
+                return
+
+        # Clean IP mode, or smart fallback when base has no usable result.
+        phase = "clean_ip" if mode == "clean_ip" else "auto_clean_ip_fallback"
+        endpoints = collect_clean_endpoints()
+        if not endpoints:
+            raise ValueError("برای حالت Clean IP باید IP وارد کنی، اسکنر IP را اجرا کنی، یا تولید تصادفی IP را فعال کنی.")
+        target_configs = generate_modified_configs(base_configs, endpoints, limit=limit)
+        if not target_configs:
+            raise ValueError("از IPهای داده‌شده هیچ کانفیگ قابل تولیدی ساخته نشد.")
+        results = test_configs(target_configs, timeout=timeout, workers=workers, limit=limit, progress=progress)
+        best = choose_best(results)
+        files = save_outputs(ROOT_DIR, base_configs, target_configs, results, best)
+        self._send_json({
+            "ok": True,
+            "phase": phase,
+            "base_count": len(base_configs),
+            "target_count": len(target_configs),
+            "result_count": len(results),
+            "working_count": len([r for r in results if r.ok]),
+            "best": best.to_dict() if best else None,
+            "top_results": [r.to_dict() for r in results[:20]],
+            "files": files,
+            "logs": logs,
+        })
+
+
+def open_folder(path: Path):
+    path = Path(path).resolve()
+    try:
+        if sys.platform.startswith("win"):
+            os.startfile(str(path))  # type: ignore[attr-defined]
+        elif sys.platform == "darwin":
+            import subprocess
+            subprocess.Popen(["open", str(path)])
+        else:
+            import subprocess
+            subprocess.Popen(["xdg-open", str(path)])
+    except Exception:
+        pass
+
+
+def main():
+    port = find_free_port()
+    server = ThreadingHTTPServer(("127.0.0.1", port), AppHandler)
+    url = f"http://127.0.0.1:{port}/"
+    print(f"{APP_NAME} is running locally:")
+    print(url)
+    print("برای خروج، پنجره را ببند یا Ctrl+C بزن.")
+    threading.Timer(0.6, lambda: webbrowser.open(url)).start()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nخروج.")
+    finally:
+        server.server_close()
+
+
+if __name__ == "__main__":
+    main()

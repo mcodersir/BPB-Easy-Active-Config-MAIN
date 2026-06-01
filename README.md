@@ -65,7 +65,7 @@ Version 9 introduces several major improvements over previous versions:
 | **Smart Config Testing** | Auto mode tests base configs first, then falls back to Clean IP |
 | **VLESS WS Probe** | Real WebSocket upgrade + VLESS protocol validation |
 | **CLI Mode** | Command-line interface for automation and scripting |
-| **Code Obfuscation** | Source code is protected against casual copying |
+| **Open Source** | Full readable source code — no obfuscation, fully auditable |
 
 ---
 
@@ -129,29 +129,29 @@ BPB_Easy_Active_Config_MAIN_v9/
 ├── README.md                         # This documentation
 ├── README_FA.md                      # Farsi documentation
 │
-├── src/                              # Core Python modules (obfuscated)
+├── src/                              # Core Python modules (readable source)
 │   ├── __init__.py
 │   ├── core.py                       # Subscription parsing, config testing, IP scanning
 │   └── cloudflare_deployer.py        # Cloudflare API integration
 │
-├── ui/                               # Web interface (obfuscated/minified)
+├── ui/                               # Web interface
 │   ├── index.html                    # Main HTML - 6-step wizard layout
-│   ├── styles.css                    # Full responsive CSS (minified)
-│   └── app.js                        # Frontend JavaScript logic (obfuscated)
+│   ├── styles.css                    # Full responsive CSS with Vazirmatn font
+│   └── app.js                        # Frontend JavaScript logic
 │
 ├── integrated_sources/               # Bundled source projects
 │   ├── README_FA.md
 │   ├── BPB_Worker_Panel_Bundle/
-│   │   ├── worker.js                 # Cloudflare Worker script (obfuscated)
+│   │   ├── worker.js                 # Cloudflare Worker script
 │   │   └── README_FA.md
 │   ├── BPB_Wizard_Internal/
-│   │   ├── local_wizard_flow.py      # Wizard state management (obfuscated)
+│   │   ├── local_wizard_flow.py      # Wizard state management
 │   │   └── README_FA.md
 │   ├── SenPaiScanner_Core/
-│   │   ├── senpai_scanner_core.py    # IP scanner re-exports (obfuscated)
+│   │   ├── senpai_scanner_core.py    # IP scanner re-exports
 │   │   └── README_FA.md
 │   └── Rasoul_Config_Modifier/
-│       ├── config_modifier_core.py   # Config modifier re-exports (obfuscated)
+│       ├── config_modifier_core.py   # Config modifier re-exports
 │       └── README_FA.md
 │
 ├── examples/                         # Sample input files
@@ -397,6 +397,24 @@ Deploys the bundled worker.js to Cloudflare.
 }
 ```
 
+### GET /api/deploy-config
+
+Returns saved deploy configuration (API token is masked).
+
+```json
+{
+  "ok": true,
+  "config": {
+    "api_token_masked": "********abcd",
+    "account_id": "32-char-hex",
+    "worker_name": "bpb-panel",
+    "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "sub_path": "sub",
+    "proxy_ip": ""
+  }
+}
+```
+
 ### POST /api/open-url
 
 Opens a safe, whitelisted URL in the user's default browser.
@@ -411,36 +429,39 @@ Opens the integrated sources directory.
 
 ---
 
-## Code Protection
+## What's New in v1.5
 
-This project's source code is protected using multiple layers of obfuscation to prevent unauthorized copying and modification:
+### IP Scanner Improvements (SenPaiScanner Methodology)
+The IP scanner has been completely overhauled with techniques from [SenPaiScanner](https://github.com/MatinSenPai/SenPaiScanner):
 
-### Python Files
-All Python source files are obfuscated using a **zlib compression + base64 encoding on source text** approach:
-- Source code text is compressed with zlib (level 9)
-- Compressed data is base64-encoded and embedded in a loader stub
-- The original source code is completely removed from the files
-- At runtime, the loader decodes, decompresses, and executes the source text
-- This approach is **version-independent** — works on Python 3.9+ across all platforms
+- **WebSocket DPI Detection**: Two-stage test — holds TLS idle for 2s to detect DPI RST attacks, then checks if WebSocket upgrade works
+- **SNI Rotation**: Rotates across 5 Cloudflare hostnames to reduce DPI pattern matching
+- **Neighbor IP Expansion**: When an IP works, automatically probes nearby IPs (±1 to ±8) to find clusters
+- **Timeout Budget Splitting**: TCP gets 1/4, TLS gets 1/2, HTTP gets 1/4 of total timeout
+- **Download Speed Test**: Top candidates get a real download speed measurement
+- **Multi-Phase Scanning**: Phase 1 (TCP/TLS) → Phase 2 (HTTP + DPI) → Phase 3 (Speed test for top 20)
+- **Better Scoring**: Comprehensive score based on TCP, TLS, HTTP, DPI, latency, and speed
 
-This means:
-- The original code structure, comments, and logic are not directly readable
-- Direct file inspection reveals only the base64-encoded compressed payload
-- The code runs normally on any Python 3.9+ version (Windows, macOS, Linux)
+### Config Output Fixes
+- Fixed HTTP 500 errors caused by malformed VMess Base64 and invalid VLESS/Trojan URIs
+- All config parsing now has proper error handling with try/except
+- URL-safe Base64 is properly handled
+- Invalid ports and malformed configs are gracefully skipped instead of crashing
+- Only configs scoring ≥ 50 are included in working_configs.txt
+- Best config includes a summary with score, latency, and endpoint info
 
-### JavaScript Files
-All JavaScript files (app.js, worker.js) are obfuscated using **javascript-obfuscator** with:
-- Control flow flattening
-- Dead code injection
-- String array encoding (base64)
-- String array threshold at 75%
-- Identifier name mangling (hexadecimal names)
-- Object key transformation
-- Self-defending code
-- Unicode escape sequences
+### Deploy Info Persistence
+- Cloudflare API token, Account ID, Worker name, UUID, and other deploy settings are saved locally
+- On next launch, form fields are auto-populated with saved values
+- API token is masked in the frontend for security
 
-### CSS Files
-Stylesheets are minified to remove all whitespace, comments, and readable formatting.
+### Vazirmatn Font
+- The UI now uses Vazirmatn, the standard Persian web font, for proper Farsi rendering
+
+### Open Source
+- All source code is fully readable — no obfuscation or encoding
+- Users can audit every line of code before running it
+- Transparent and trustworthy
 
 ---
 

