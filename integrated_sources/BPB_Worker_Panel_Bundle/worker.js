@@ -1,6 +1,6 @@
-// BPB Easy Internal Worker - mcoders Bundle v9
-// Minimal BPB-compatible VLESS-over-WebSocket worker for deployment on the user's own Cloudflare account.
-// Env vars: UUID (required), SUB_PATH (optional), PROXY_IP (optional)
+// BPB Easy Internal Worker v2 - mcoders Bundle
+// Enhanced worker inspired by Nova-Proxy: generates VLESS + Trojan configs on multiple ports
+// Env vars: UUID (required), SUB_PATH (optional, default: sub), PROXY_IP (optional)
 import { connect } from 'cloudflare:sockets';
 
 const FALLBACK_UUID = '__BPB_UUID__';
@@ -8,6 +8,8 @@ const FALLBACK_SUB_PATH = '__BPB_SUB_PATH__';
 const FALLBACK_PROXY_IP = '__BPB_PROXY_IP__';
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+
+const TLS_PORTS = [443, 8443, 2053, 2083, 2087, 2096];
 
 function uuidToBytes(uuid) {
   const clean = String(uuid || '').replace(/-/g, '').toLowerCase();
@@ -29,27 +31,87 @@ function textResponse(body, status = 200, headers = {}) {
 function htmlResponse(body) {
   return new Response(body, { headers: { 'content-type': 'text/html;charset=utf-8' } });
 }
-function buildVless(request, env) {
-  const url = new URL(request.url);
+
+// Nova-Proxy inspired: generate multiple config types
+function buildConfigs(request, env) {
   const host = hostHeader(request);
   const uuid = env.UUID || FALLBACK_UUID || '00000000-0000-0000-0000-000000000000';
-  const name = encodeURIComponent('BPB-Easy-Cloudflare');
-  const path = encodeURIComponent('/ws');
-  return `vless://${uuid}@${host}:443?encryption=none&security=tls&sni=${host}&type=ws&host=${host}&path=${path}#${name}`;
+  const proxyIP = env.PROXY_IP || FALLBACK_PROXY_IP || '';
+  const configs = [];
+
+  // VLESS WS TLS on all Cloudflare ports
+  for (const port of TLS_PORTS) {
+    const label = port === 443 ? 'BPB-VLESS-WS-TLS' : `BPB-VLESS-WS-${port}`;
+    const name = encodeURIComponent(`${label}-${host.split('.')[0]}`);
+    configs.push(`vless://${uuid}@${host}:${port}?encryption=none&security=tls&sni=${host}&type=ws&host=${host}&path=%2Fws#${name}`);
+  }
+
+  // VLESS gRPC TLS
+  const grpcName = encodeURIComponent(`BPB-VLESS-GRPC-TLS-${host.split('.')[0]}`);
+  configs.push(`vless://${uuid}@${host}:443?encryption=none&security=tls&sni=${host}&type=grpc&serviceName=grpc&host=${host}#${grpcName}`);
+
+  // Trojan WS TLS
+  const trojanHost = proxyIP || host;
+  const trojanName = encodeURIComponent(`BPB-Trojan-WS-TLS-${host.split('.')[0]}`);
+  configs.push(`trojan://${uuid}@${trojanHost}:443?security=tls&sni=${host}&type=ws&host=${host}&path=%2Fws#${trojanName}`);
+
+  // Trojan on 8443
+  const trojan8443Name = encodeURIComponent(`BPB-Trojan-WS-8443-${host.split('.')[0]}`);
+  configs.push(`trojan://${uuid}@${trojanHost}:8443?security=tls&sni=${host}&type=ws&host=${host}&path=%2Fws#${trojan8443Name}`);
+
+  // VLESS WS with clean IP support (if proxyIP is set)
+  if (proxyIP) {
+    for (const port of [443, 8443]) {
+      const cleanName = encodeURIComponent(`BPB-CleanIP-VLESS-${port}-${host.split('.')[0]}`);
+      configs.push(`vless://${uuid}@${proxyIP}:${port}?encryption=none&security=tls&sni=${host}&type=ws&host=${host}&path=%2Fws#${cleanName}`);
+    }
+  }
+
+  return configs;
 }
+
 function subPath(env) { return '/' + String(env.SUB_PATH || FALLBACK_SUB_PATH || 'sub').replace(/^\/+/, ''); }
+
 async function handleHttp(request, env) {
   const url = new URL(request.url);
-  if (url.pathname === subPath(env) || url.pathname.startsWith(subPath(env) + '/')) {
-    const config = buildVless(request, env);
-    const b64 = btoa(unescape(encodeURIComponent(config)));
+  const sp = subPath(env);
+
+  // Subscription endpoint (base64 encoded)
+  if (url.pathname === sp || url.pathname.startsWith(sp + '/')) {
+    const configs = buildConfigs(request, env);
+    const b64 = btoa(unescape(encodeURIComponent(configs.join('\n'))));
     return textResponse(b64 + '\n');
   }
+
+  // Raw config list
   if (url.pathname === '/raw' || url.pathname === '/config') {
-    return textResponse(buildVless(request, env) + '\n');
+    const configs = buildConfigs(request, env);
+    return textResponse(configs.join('\n') + '\n');
   }
-  return htmlResponse(`<!doctype html><html><head><meta charset="utf-8"><title>BPB Easy</title><style>body{font-family:Arial,sans-serif;max-width:760px;margin:40px auto;line-height:1.7;color:#111827}code,textarea{direction:ltr;display:block;width:100%;box-sizing:border-box;background:#f3f4f6;border:1px solid #d1d5db;border-radius:12px;padding:12px}a{color:#111827;font-weight:700}</style></head><body><h1>BPB Easy Internal Worker - mcoders</h1><p>Worker is running. Subscription path:</p><code>${subPath(env)}</code><p>Raw config:</p><textarea rows="6" readonly>${buildVless(request, env)}</textarea></body></html>`);
+
+  // SingBox format
+  if (url.pathname === '/singbox') {
+    const host = hostHeader(request);
+    const uuid = env.UUID || FALLBACK_UUID;
+    const configs = buildConfigs(request, env);
+    const outbounds = configs.filter(c => c.startsWith('vless://')).slice(0, 6).map(c => {
+      const u = new URL(c);
+      return {
+        type: "vless", tag: decodeURIComponent(u.hash.slice(1)),
+        server: u.hostname, server_port: parseInt(u.port),
+        uuid: u.username, tls: { enabled: true, server_name: u.searchParams.get('sni') },
+        transport: u.searchParams.get('type') === 'ws' ? { type: "ws", path: u.searchParams.get('path'), headers: { Host: u.searchParams.get('host') } } : { type: "grpc", service_name: u.searchParams.get('serviceName') || 'grpc' }
+      };
+    });
+    return new Response(JSON.stringify({ outbounds }, null, 2), { headers: { 'content-type': 'application/json' } });
+  }
+
+  // Landing page
+  const configs = buildConfigs(request, env);
+  const configListHtml = configs.map(c => `<li style="margin:6px 0;padding:8px;background:#f3f4f6;border-radius:8px;word-break:break-all;direction:ltr;text-align:left;font-size:13px">${c}</li>`).join('');
+  return htmlResponse(`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BPB Easy Worker v2</title><style>body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.7;color:#111827}h1{color:#0ea5e9}code{direction:ltr;display:block;background:#f3f4f6;padding:12px;border-radius:12px;overflow:auto}a{color:#0ea5e9;font-weight:700}ul{list-style:none;padding:0}</style></head><body><h1>BPB Easy Worker v2 - mcoders</h1><p>Worker is running. Total configs: <b>${configs.length}</b></p><p>Subscription path: <code>${sp}</code></p><p><a href="${sp}">Subscription Link (Base64)</a> | <a href="/raw">Raw Configs</a> | <a href="/singbox">SingBox Format</a></p><h2>All Generated Configs:</h2><ul>${configListHtml}</ul></body></html>`);
 }
+
 function readAddress(view, offset) {
   const atyp = view.getUint8(offset++);
   if (atyp === 1) {

@@ -1,4 +1,4 @@
-name: Build & Release
+name: Build & Release v2
 
 on:
   push:
@@ -149,27 +149,33 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: BPB Easy Active Config MAIN v1.5
+          name: BPB Easy Active Config MAIN v2.0
           body: |
-            ## BPB Easy Active Config MAIN v1.5
+            ## BPB Easy Active Config MAIN v2.0 🚀
+
+            ### نسخه ۲ — ساده‌تر، واقعی‌تر، سریع‌تر
+
+            تغییرات اصلی:
+            - 🎯 **رابط ساده ۳ مرحله‌ای** — Deploy → Test → Copy
+            - 📡 **نتایج زنده (SSE Streaming)** — هر کانفیگ به محض تست نمایش داده می‌شود
+            - 🛡️ **Worker جدید با الهام از Nova-Proxy** — تولید خودکار VLESS + Trojan روی تمام پورت‌ها
+            - 🔧 **رفع خطای HTTP 500** — همیشه کانفیگ تولید می‌شود، هیچ‌وقت خالی برنمی‌گردد
+            - 🔒 **رفع مشکل CSP/eval** — بدون استفاده از eval در JavaScript
+            - 💾 **ذخیره خودکار IP** — لیست IPها برای استفاده بعدی ذخیره می‌شود
+            - 📋 **خروجی SingBox** — Worker لینک فرمت SingBox هم تولید می‌کند
+            - 🎨 **UI جدید و مدرن** — با فونت وزیرمتن و طراحی فارسی
 
             ### دانلود و نصب
 
             | پلتفرم | فایل | راهنما |
             |---------|------|--------|
-            | 🪟 ویندوز | `BPB-Easy-Config-Windows.exe` | دانلود و اجرا — نیاز به نصب ندارد |
+            | 🪟 ویندوز | `BPB-Easy-Config-Windows.exe` | دانلود و اجرا |
             | 🍎 مک | `BPB-Easy-Config-macOS` | دانلود → `chmod +x` → اجرا |
             | 🐧 لینوکس | `BPB-Easy-Config-Linux` | دانلود → `chmod +x` → اجرا |
 
-            ### تغییرات v1.5
-            - رفع خطای HTTP 500 هنگام دریافت Subscription
-            - ساخت کانفیگ الگو وقتی Subscription در دسترس نیست
-            - ذخیره اطلاعات دیپلوی برای استفاده بعدی
-            - اضافه شدن favicon.ico
-            - پیام‌های خطای فارسی بهتر
-
             ### Credits
             - [BPB Worker Panel](https://github.com/bia-pain-bache/BPB-Worker-Panel)
+            - [Nova-Proxy](https://github.com/IRNova/Nova-Proxy) — الهام‌بخش Worker جدید
             - [SenPaiScanner](https://github.com/MatinSenPai/SenPaiScanner)
             - [v2ray-config-modifier](https://github.com/seramo/v2ray-config-modifier)
 
